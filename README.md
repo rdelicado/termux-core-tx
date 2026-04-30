@@ -49,23 +49,25 @@ pkg update && pkg upgrade
 pkg install git -y
 
 # Clonar el repositorio
-git clone [https://github.com/rdelicado/termux-core-tx.git](https://github.com/rdelicado/termux-core-tx.git)
+git clone git clone https://github.com/rdelicado/termux-core-tx.git
 
 # Acceder y ejecutar
 cd termux-core-tx
 chmod +x bin/main.sh
 ./bin/main.sh
 ```
-📂 Estructura del Proyecto
-Plaintext
+## 📂 Estructura del Proyecto
+
+```text
 termux-core-tx/
 ├── bin/          # Punto de entrada (main.sh)
 ├── core/         # Lógica interna y motores
 ├── modules/      # Scripts de instalación modular
 ├── templates/    # Archivos de configuración predefinidos
 └── logs/         # Historial de instalaciones
-🤝 Contribuir
+
+## 🤝 Contribuir
 ¡Las contribuciones son bienvenidas! Si tienes una idea para un nuevo módulo o una mejora visual, no dudes en abrir un Issue o enviar un Pull Request.
 
-📄 Licencia
+## 📄 Licencia
 Este proyecto está bajo la licencia MIT. Consulta el archivo LICENSE para más detalles.
