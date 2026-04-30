@@ -1,0 +1,10 @@
+# Ignorar logs y backups
+logs/*
+backups/*
+!logs/.gitkeep
+!backups/.gitkepp
+
+# Ignorar archivos temporales de editores/OS
+.DS_Store
+*~
+*.swp
