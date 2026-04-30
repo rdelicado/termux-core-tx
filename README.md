@@ -55,6 +55,7 @@ git clone [https://github.com/rdelicado/termux-core-tx.git](https://github.com/r
 cd termux-core-tx
 chmod +x bin/main.sh
 ./bin/main.sh
+```
 📂 Estructura del Proyecto
 Plaintext
 termux-core-tx/
