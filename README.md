@@ -65,6 +65,7 @@ termux-core-tx/
 ├── modules/      # Scripts de instalación modular
 ├── templates/    # Archivos de configuración predefinidos
 └── logs/         # Historial de instalaciones
+```
 
 ## 🤝 Contribuir
 ¡Las contribuciones son bienvenidas! Si tienes una idea para un nuevo módulo o una mejora visual, no dudes en abrir un Issue o enviar un Pull Request.
