@@ -137,14 +137,29 @@ install_lazygit() {
 }
 
 install_btop() {
-    print_info "Instalando btop..."
+    print_info "Instalando btop/htop..."
+    
     if command -v btop &>/dev/null; then
         print_warning "btop ya instalado: $(btop --version)"
         return 0
     fi
     
-    install_package "btop"
-    command -v btop &>/dev/null && print_success "btop instalado" || print_error "Error"
+    if command -v htop &>/dev/null; then
+        print_warning "htop ya instalado: $(htop --version)"
+        return 0
+    fi
+    
+    if install_package "btop"; then
+        if command -v btop &>/dev/null; then
+            print_success "btop instalado"
+        elif command -v htop &>/dev/null; then
+            print_success "htop instalado como alternativa"
+        fi
+        return 0
+    else
+        print_error "Error al instalar btop/htop"
+        return 1
+    fi
 }
 
 install_all_basetools() {

@@ -81,49 +81,55 @@ install_go() {
     fi
     
     local os=$(detect_os)
-    local arch=$(uname -m)
-    local go_arch="amd64"
     
-    case "$arch" in
-        x86_64)  go_arch="amd64" ;;
-        aarch64|arm64) go_arch="arm64" ;;
-        *)      go_arch="amd64" ;;
-    esac
-    
-    local go_version="1.21.5"
-    local go_file="go${go_version}.linux-${go_arch}.tar.gz"
-    local go_url="https://go.dev/dl/${go_file}"
-    
-    cd /tmp
-    
-    if command -v wget &>/dev/null; then
-        wget -q "$go_url" -O "$go_file"
+    if [[ "$os" == "android" ]]; then
+        install_package "golang"
     else
-        curl -sSL "$go_url" -o "$go_file"
-    fi
-    
-    if [[ -f "$go_file" ]]; then
-        if [[ "$(detect_os)" == "android" ]]; then
-            rm -rf "$HOME/go"
-            tar -C "$HOME" -xzf "$go_file"
-            export PATH="$HOME/go/bin:$PATH"
+        local arch=$(uname -m)
+        local go_arch="amd64"
+        
+        case "$arch" in
+            x86_64)  go_arch="amd64" ;;
+            aarch64|arm64) go_arch="arm64" ;;
+            *)      go_arch="amd64" ;;
+        esac
+        
+        local go_version="1.21.5"
+        local go_file="go${go_version}.linux-${go_arch}.tar.gz"
+        local go_url="https://go.dev/dl/${go_file}"
+        
+        cd /tmp
+        
+        if command -v wget &>/dev/null; then
+            wget -q "$go_url" -O "$go_file"
         else
+            curl -sSL "$go_url" -o "$go_file"
+        fi
+        
+        if [[ -f "$go_file" ]]; then
             sudo rm -rf /usr/local/go
             sudo tar -C /usr/local -xzf "$go_file"
-        fi
-        
-        rm "$go_file"
-        
-        if command -v go &>/dev/null; then
-            print_success "Go instalado: $(go version)"
+            rm "$go_file"
             
-            echo "" >> "$HOME/.zshrc"
-            echo "# Go" >> "$HOME/.zshrc"
-            echo 'export PATH=$PATH:$HOME/go/bin' >> "$HOME/.zshrc"
-            print_info "Go añadido al PATH"
+            if command -v go &>/dev/null; then
+                print_success "Go instalado: $(go version)"
+                
+                echo "" >> "$HOME/.zshrc"
+                echo "# Go" >> "$HOME/.zshrc"
+                echo 'export PATH=$PATH:/usr/local/go/bin' >> "$HOME/.zshrc"
+                print_info "Go añadido al PATH"
+            fi
+        else
+            print_error "Error al descargar Go"
+            return 1
         fi
+    fi
+    
+    if command -v go &>/dev/null; then
+        print_success "Go instalado: $(go version)"
     else
-        print_error "Error al descargar Go"
+        print_error "Error al instalar Go"
+        return 1
     fi
 }
 
