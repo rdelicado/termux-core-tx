@@ -26,16 +26,16 @@ execute_action() {
 show_main_menu() {
     while true; do
         local options=(
-            "Apariencia        (zsh, p10k, plugins, lsd, bat)"
-            "Herramientas Base (git, fzf, zoxide, lazygit, btop)"
-            "Entornos Dev      (Neovim, C/C++, Go, Python, Node)"
-            "Multiplexers      (tmux)"
-            "PRoot Distro      (Debian, Alpine)"
-            "Dotfiles Manager  (symlinks hacia $HOME)"
-            "Instalar Todo     (todo lo que falte)"
-            "Ver Estado        (herramientas instaladas)"
-            "Update CORE-TX    (git pull origin main)"
-            "Desinstalador     (eliminar herramientas)"
+            "Apariencia        [~150MB] (zsh, p10k, plugins, lsd, bat)"
+            "Herramientas Base [~40MB]  (git, fzf, zoxide, lazygit, btop)"
+            "Entornos Dev      [~900MB] (Neovim, C/C++, Go, Python, Node)"
+            "Multiplexers      [~5MB]   (tmux)"
+            "PRoot Distro      [~150MB] (Debian, Alpine)"
+            "Dotfiles Manager  [~1MB]   (symlinks hacia \$HOME)"
+            "Instalar Todo     [~1.2GB] (todo lo que falte)"
+            "Ver Estado                 (herramientas instaladas)"
+            "Update CORE-TX             (git pull origin main)"
+            "Desinstalador              (eliminar herramientas)"
             "Ver Logs"
             "Salir"
         )
