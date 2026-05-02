@@ -31,6 +31,7 @@ show_main_menu() {
             "Entornos Dev      (Neovim, C/C++, Go, Python, Node)"
             "Instalar Todo     (todo lo que falte)"
             "Ver Estado        (herramientas instaladas)"
+            "Desinstalador     (eliminar herramientas)"
             "Ver Logs"
             "Salir"
         )
@@ -90,8 +91,9 @@ show_main_menu() {
             2) show_devenv_menu ;;
             3) execute_action "source \"\$PROJECT_ROOT/modules/01-appearance/install.sh\" && install_all_appearance && source \"\$PROJECT_ROOT/modules/02-base-tools/install.sh\" && install_all_basetools && source \"\$PROJECT_ROOT/modules/03-dev-env/install.sh\" && install_all_devenvs" "Instalación de TODO el sistema" ;;
             4) show_status ;;
-            5) show_logs ;;
-            6) clear; exit 0 ;;
+            5) show_uninstall_menu ;;
+            6) show_logs ;;
+            7) clear; exit 0 ;;
         esac
     done
 }
@@ -574,4 +576,292 @@ show_logs() {
     
     echo -e "\n  ${COLOR_MUTED}Presiona cualquier tecla para volver...${RESET}"
     read -rsn1
+}
+
+show_uninstall_menu() {
+    while true; do
+        local options=(
+            "Apariencia        (zsh, p10k, plugins, lsd, bat)"
+            "Herramientas Base (git, wget, openssh, fzf, btop)"
+            "Entornos Dev      (neovim, clang, go, python, node)"
+            "Master Wipe       (eliminar TODO excepto git)"
+            "Volver            (Regresar al menú principal)"
+        )
+        local selected=0
+        local key
+
+        tput civis
+        trap "tput cnorm; exit" INT TERM
+
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}Desinstalador Inteligente${RESET}\n"
+        tput sc
+
+        while true; do
+            tput rc
+            
+            for i in "${!options[@]}"; do
+                if [[ $i -eq $selected ]]; then
+                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                else
+                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                fi
+            done
+
+            echo -e "\e[K"
+            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+
+            read -rsn1 key
+
+            case "$key" in
+                $'\e')
+                    read -rsn2 key
+                    case "$key" in
+                        '[A') ((selected--));;
+                        '[B') ((selected++));;
+                    esac
+                    ;;
+                'k') ((selected--));;
+                'j') ((selected++));;
+                'q') tput cnorm; return ;;
+                "") break ;;
+            esac
+
+            if [[ $selected -lt 0 ]]; then
+                selected=$((${#options[@]} - 1))
+            elif [[ $selected -ge ${#options[@]} ]]; then
+                selected=0
+            fi
+        done
+
+        tput cnorm
+
+        case $selected in
+            0) show_uninstall_appearance ;;
+            1) show_uninstall_basetools ;;
+            2) show_uninstall_devenv ;;
+            3) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_master_wipe" "Master Wipe" ;;
+            4) return ;;
+        esac
+    done
+}
+
+show_uninstall_appearance() {
+    while true; do
+        local options=(
+            "ZSH Completo      (ZSH + OMZ + P10k + plugins + .zshrc)"
+            "Oh My Zsh        (Solo OMZ, ZSH se mantiene)"
+            "Powerlevel10k    (Solo el tema)"
+            "Plugins ZSH      (autosuggestions + syntax-highlighting)"
+            "LSD              (ls moderno)"
+            "Bat              (cat con syntax highlighting)"
+            "Desinstalar Todo (Toda la apariencia)"
+            "Volver           (Regresar al menú)"
+        )
+        local selected=0
+        local key
+
+        tput civis
+        trap "tput cnorm; exit" INT TERM
+
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}Desinstalar Apariencia${RESET}\n"
+        tput sc
+
+        while true; do
+            tput rc
+            
+            for i in "${!options[@]}"; do
+                if [[ $i -eq $selected ]]; then
+                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                else
+                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                fi
+            done
+
+            echo -e "\e[K"
+            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+
+            read -rsn1 key
+
+            case "$key" in
+                $'\e')
+                    read -rsn2 key
+                    case "$key" in
+                        '[A') ((selected--));;
+                        '[B') ((selected++));;
+                    esac
+                    ;;
+                'k') ((selected--));;
+                'j') ((selected++));;
+                'q') tput cnorm; return ;;
+                "") break ;;
+            esac
+
+            if [[ $selected -lt 0 ]]; then
+                selected=$((${#options[@]} - 1))
+            elif [[ $selected -ge ${#options[@]} ]]; then
+                selected=0
+            fi
+        done
+
+        tput cnorm
+
+        case $selected in
+            0) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_zsh_cascade" "Desinstalar ZSH (con cascada)" ;;
+            1) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_oh_my_zsh_only" "Desinstalar Oh My Zsh" ;;
+            2) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_powerlevel10k" "Desinstalar Powerlevel10k" ;;
+            3) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_zsh_plugins" "Desinstalar Plugins ZSH" ;;
+            4) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_lsd" "Desinstalar LSD" ;;
+            5) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_bat" "Desinstalar Bat" ;;
+            6) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_all_appearance" "Desinstalar Toda la Apariencia" ;;
+            7) return ;;
+        esac
+    done
+}
+
+show_uninstall_basetools() {
+    while true; do
+        local options=(
+            "Wget              (Descargador de archivos)"
+            "OpenSSH           (Conexión remota segura)"
+            "FZF               (Buscador fuzzy interactivo)"
+            "Btop/Htop         (Monitor de recursos del sistema)"
+            "Desinstalar Todo  (Todas las herramientas base)"
+            "Volver            (Regresar al menú)"
+        )
+        local selected=0
+        local key
+
+        tput civis
+        trap "tput cnorm; exit" INT TERM
+
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}Desinstalar Herramientas Base${RESET}\n"
+        tput sc
+
+        while true; do
+            tput rc
+            
+            for i in "${!options[@]}"; do
+                if [[ $i -eq $selected ]]; then
+                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                else
+                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                fi
+            done
+
+            echo -e "\e[K"
+            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+
+            read -rsn1 key
+
+            case "$key" in
+                $'\e')
+                    read -rsn2 key
+                    case "$key" in
+                        '[A') ((selected--));;
+                        '[B') ((selected++));;
+                    esac
+                    ;;
+                'k') ((selected--));;
+                'j') ((selected++));;
+                'q') tput cnorm; return ;;
+                "") break ;;
+            esac
+
+            if [[ $selected -lt 0 ]]; then
+                selected=$((${#options[@]} - 1))
+            elif [[ $selected -ge ${#options[@]} ]]; then
+                selected=0
+            fi
+        done
+
+        tput cnorm
+
+        case $selected in
+            0) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_wget" "Desinstalar Wget" ;;
+            1) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_openssh" "Desinstalar OpenSSH" ;;
+            2) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_fzf" "Desinstalar FZF" ;;
+            3) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_btop_htop" "Desinstalar Btop/Htop" ;;
+            4) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_all_basetools" "Desinstalar Todo" ;;
+            5) return ;;
+        esac
+    done
+}
+
+show_uninstall_devenv() {
+    while true; do
+        local options=(
+            "Neovim            (Editor vim moderno)"
+            "C/C++ (Clang)    (Compilador para C/C++)"
+            "Go               (Lenguaje de Google)"
+            "Python           (Lenguaje interpretado)"
+            "Node.js          (JS del lado del servidor)"
+            "Desinstalar Todo (Todos los entornos)"
+            "Volver           (Regresar al menú)"
+        )
+        local selected=0
+        local key
+
+        tput civis
+        trap "tput cnorm; exit" INT TERM
+
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}Desinstalar Entornos Dev${RESET}\n"
+        tput sc
+
+        while true; do
+            tput rc
+            
+            for i in "${!options[@]}"; do
+                if [[ $i -eq $selected ]]; then
+                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                else
+                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                fi
+            done
+
+            echo -e "\e[K"
+            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+
+            read -rsn1 key
+
+            case "$key" in
+                $'\e')
+                    read -rsn2 key
+                    case "$key" in
+                        '[A') ((selected--));;
+                        '[B') ((selected++));;
+                    esac
+                    ;;
+                'k') ((selected--));;
+                'j') ((selected++));;
+                'q') tput cnorm; return ;;
+                "") break ;;
+            esac
+
+            if [[ $selected -lt 0 ]]; then
+                selected=$((${#options[@]} - 1))
+            elif [[ $selected -ge ${#options[@]} ]]; then
+                selected=0
+            fi
+        done
+
+        tput cnorm
+
+        case $selected in
+            0) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_neovim" "Desinstalar Neovim" ;;
+            1) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_clang" "Desinstalar Clang" ;;
+            2) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_go" "Desinstalar Go" ;;
+            3) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_python" "Desinstalar Python" ;;
+            4) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_nodejs" "Desinstalar Node.js" ;;
+            5) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_all_devenvs" "Desinstalar Todos" ;;
+            6) return ;;
+        esac
+    done
 }

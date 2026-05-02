@@ -115,3 +115,51 @@ install_package() {
     log_error "Failed to install $pkg after $max_retries attempts"
     return 1
 }
+
+confirm_uninstall() {
+    local package="$1"
+    local dependencies="$2"
+    
+    tput cnorm
+    echo ""
+    if [[ -n "$dependencies" ]]; then
+        echo -e "${YELLOW}⚠️  ATENCIÓN: Vas a desinstalar $package${NC}"
+        echo -e "${YELLOW}Esto también eliminará: $dependencies${NC}"
+    else
+        echo -e "${YELLOW}⚠️  Vas a desinstalar $package${NC}"
+    fi
+    echo -e "${CYAN}¿Deseas continuar? [S/n]: ${NC}"
+    read -r response
+    
+    tput civis
+    
+    if [[ "$response" =~ ^[Ss]$ ]] || [[ -z "$response" ]]; then
+        return 0
+    else
+        print_info "Desinstalación cancelada"
+        return 1
+    fi
+}
+
+uninstall_package() {
+    local pkg=$1
+    local pm=$(get_package_manager)
+    
+    case "$pm" in
+        pkg)
+            pkg uninstall -y "$pkg"
+            ;;
+        apt)
+            sudo apt-get remove -y --purge "$pkg"
+            ;;
+        brew)
+            brew uninstall "$pkg"
+            ;;
+        *)
+            print_error "Gestor de paquetes desconocido"
+            return 1
+            ;;
+    esac
+    
+    return $?
+}
