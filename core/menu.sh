@@ -159,13 +159,13 @@ show_appearance_menu() {
         tput cnorm
 
         case $selected in
-            0) execute_action "bash modules/01-appearance/zsh.sh" "ZSH + Oh My Zsh" ;;
-            1) execute_action "bash modules/01-appearance/install.sh" "Powerlevel10k" ;;
-            2) execute_action "bash modules/01-appearance/install.sh" "Plugins ZSH" ;;
-            3) execute_action "bash modules/01-appearance/install.sh" "Plugins ZSH" ;;
+            0) execute_action "bash \"\$PROJECT_ROOT/modules/01-appearance/zsh.sh\"" "ZSH + Oh My Zsh" ;;
+            1) execute_action "bash \"\$PROJECT_ROOT/modules/01-appearance/install.sh\"" "Powerlevel10k" ;;
+            2) execute_action "bash \"\$PROJECT_ROOT/modules/01-appearance/install.sh\"" "Plugins ZSH" ;;
+            3) execute_action "bash \"\$PROJECT_ROOT/modules/01-appearance/install.sh\"" "Plugins ZSH" ;;
             4) execute_action "pkg install lsd -y" "LSD" ;;
             5) execute_action "pkg install bat -y" "Bat" ;;
-            6) execute_action "bash modules/01-appearance/install.sh" "Instalación Completa Apariencia" ;;
+            6) execute_action "bash \"\$PROJECT_ROOT/modules/01-appearance/install.sh\"" "Instalación Completa Apariencia" ;;
             7) return ;;
         esac
     done
