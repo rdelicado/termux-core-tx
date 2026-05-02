@@ -19,7 +19,13 @@ ensure_proot_distro_support() {
 
 is_proot_installed() {
     local distro="$1"
-    proot-distro list --installed 2>/dev/null | grep -qi "${distro}"
+    # Validamos verificando si existe el directorio rootfs de la distro instalada en Termux
+    local rootfs="${PREFIX:-/data/data/com.termux/files/usr}/var/lib/proot-distro/installed-rootfs/${distro}"
+    if [[ -d "$rootfs" ]]; then
+        return 0
+    else
+        return 1
+    fi
 }
 
 install_proot_distro() {
