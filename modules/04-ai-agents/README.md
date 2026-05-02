@@ -361,6 +361,53 @@ sudo apt update
 sudo apt install python3 python3-pip -y
 ```
 
+### ⚠️ Problemas de Instalación en Termux (Android ARM)
+
+**Síntomas:**
+- `AttributeError: module 'pkgutil' has no attribute 'ImpImporter'`
+- `ModuleNotFoundError: No module named 'setuptools_rust'`
+- `ERROR: Cannot install aider-chat... conflicting dependencies`
+- Paquetes como `numpy`, `aiohttp`, `tiktoken` no compilan
+
+**Causa:**
+Termux corre en arquitectura ARM de Android con Python 3.13, pero muchos paquetes Python:
+- No tienen wheels precompilados para ARM
+- Requieren compiladores y headers de C/Rust no disponibles en Termux
+- Tienen dependencias estrictas incompatibles con Python 3.13
+
+**Soluciones (en orden de preferencia):**
+
+#### 1. ✅ Usar WSL2 (Windows) o Linux Nativo
+```bash
+# Infinitamente mejor soporte para paquetes Python
+sudo apt install python3 python3-pip -y
+pip3 install aider-chat
+```
+
+#### 2. ✅ Docker en Termux
+```bash
+# Si Docker está disponible
+docker run -it python:3.11 bash
+pip install aider-chat
+```
+
+#### 3. 🔄 Reintentar en Termux (puede funcionar)
+```bash
+# En una terminal limpia
+python3 -m pip install --upgrade pip setuptools wheel setuptools_rust
+python3 -m pip install aider-chat
+
+# Si falla, ejecutar el script de CORE-TX nuevamente:
+./bin/main.sh
+```
+
+#### 4. 📦 Alternativa: Usar Aider sin instalarlo
+```bash
+# Ejecutar como módulo sin instalar
+python3 -m pip install aider-chat --target ./aider_lib
+PYTHONPATH=./aider_lib python3 -m aider
+```
+
 ---
 
 ## Estructura del Módulo
