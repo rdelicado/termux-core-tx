@@ -9,6 +9,10 @@ source "$PROJECT_ROOT/core/backup.sh"
 source "$PROJECT_ROOT/core/logger.sh"
 source "$PROJECT_ROOT/core/menu.sh"
 source "$PROJECT_ROOT/core/installers.sh"
+source "$PROJECT_ROOT/modules/04-multiplexers/install.sh"
+source "$PROJECT_ROOT/modules/05-proot/install.sh"
+source "$PROJECT_ROOT/modules/06-dotfiles/install.sh"
+source "$PROJECT_ROOT/core/updater.sh"
 
 LOG_TOTAL=0
 LOG_SUCCESS=0

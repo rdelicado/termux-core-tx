@@ -263,6 +263,110 @@ uninstall_btop_htop() {
     fi
 }
 
+uninstall_tmux() {
+    if ! confirm_uninstall "tmux" "Ninguna dependencia"; then
+        return 1
+    fi
+
+    print_info "Desinstalando tmux..."
+    uninstall_package "tmux"
+
+    if command -v tmux &>/dev/null; then
+        print_error "Error al desinstalar tmux"
+        return 1
+    else
+        print_success "tmux desinstalado"
+        return 0
+    fi
+}
+
+uninstall_dotfiles() {
+    local dotfiles_dir="$PROJECT_ROOT/dotfiles"
+
+    if ! confirm_uninstall "Dotfiles Manager" "symlinks creados desde $dotfiles_dir"; then
+        return 1
+    fi
+
+    print_info "Eliminando symlinks de dotfiles..."
+
+    if [[ ! -d "$dotfiles_dir" ]]; then
+        print_warning "No existe $dotfiles_dir"
+        return 0
+    fi
+
+    local link
+    while IFS= read -r -d '' link; do
+        local target
+        target="$(readlink -f "$link" 2>/dev/null)"
+
+        if [[ -n "$target" && "$target" == "$dotfiles_dir"* ]]; then
+            rm -f "$link"
+            print_success "Eliminado: ${link#$HOME/}"
+        fi
+    done < <(find "$HOME" -type l -print0 2>/dev/null)
+
+    print_success "Dotfiles Manager desinstalado"
+    return 0
+}
+
+uninstall_proot_debian() {
+    if ! confirm_uninstall "Debian (proot-distro)" "rootfs y datos del contenedor"; then
+        return 1
+    fi
+
+    print_info "Eliminando Debian de proot-distro..."
+
+    if ! command -v proot-distro &>/dev/null; then
+        print_error "proot-distro no está instalado"
+        return 1
+    fi
+
+    proot-distro remove debian
+
+    print_success "Debian eliminado"
+}
+
+uninstall_proot_alpine() {
+    if ! confirm_uninstall "Alpine (proot-distro)" "rootfs y datos del contenedor"; then
+        return 1
+    fi
+
+    print_info "Eliminando Alpine de proot-distro..."
+
+    if ! command -v proot-distro &>/dev/null; then
+        print_error "proot-distro no está instalado"
+        return 1
+    fi
+
+    proot-distro remove alpine
+
+    print_success "Alpine eliminado"
+}
+
+uninstall_proot_distro() {
+    if ! confirm_uninstall "proot-distro" "Debian, Alpine y otros rootfs instalados"; then
+        return 1
+    fi
+
+    print_info "Eliminando contenedores proot-distro..."
+
+    if command -v proot-distro &>/dev/null; then
+        proot-distro remove debian 2>/dev/null
+        proot-distro remove alpine 2>/dev/null
+        uninstall_package "proot-distro"
+    else
+        print_warning "proot-distro no está instalado"
+    fi
+
+    if command -v proot-distro &>/dev/null; then
+        print_error "proot-distro sigue instalado"
+        return 1
+    fi
+
+    print_success "proot-distro desinstalado"
+    return 0
+}
+
 uninstall_neovim() {
     if ! confirm_uninstall "Neovim" "~/.config/nvim"; then
         return 1
@@ -401,6 +505,28 @@ uninstall_all_basetools() {
     print_success "Herramientas base desinstaladas"
 }
 
+uninstall_all_multiplexers() {
+    if ! confirm_uninstall "MULTIPLEXERS" "tmux"; then
+        return 1
+    fi
+
+    print_info "Desinstalando multiplexers..."
+    uninstall_tmux || return 1
+
+    print_success "Multiplexers desinstalados"
+}
+
+uninstall_all_proot() {
+    if ! confirm_uninstall "PROOT DISTRO" "Debian, Alpine y proot-distro"; then
+        return 1
+    fi
+
+    print_info "Desinstalando proot-distro y contenedores..."
+    uninstall_proot_distro || return 1
+
+    print_success "PRoot Distro desinstalado"
+}
+
 uninstall_all_devenvs() {
     if ! confirm_uninstall "ENTORNOS DEV" "neovim, clang, go, python, nodejs"; then
         return 1
@@ -423,11 +549,13 @@ uninstall_master_wipe() {
     
     print_warning "MASTER WIPE - Restaurando sistema limpio"
     print_info "Esto desinstalará TODAS las herramientas..."
-    
+
     uninstall_all_appearance
     uninstall_all_basetools
+    uninstall_all_multiplexers
     uninstall_all_devenvs
-    
+    uninstall_all_proot
+
     print_success "Master Wipe completado - Solo Git permanece"
 }
 
@@ -443,14 +571,21 @@ case "$1" in
     uninstall_openssh) uninstall_openssh ;;
     uninstall_fzf) uninstall_fzf ;;
     uninstall_btop_htop) uninstall_btop_htop ;;
+    uninstall_tmux) uninstall_tmux ;;
+    uninstall_dotfiles) uninstall_dotfiles ;;
     uninstall_neovim) uninstall_neovim ;;
     uninstall_clang) uninstall_clang ;;
     uninstall_go) uninstall_go ;;
     uninstall_python) uninstall_python ;;
     uninstall_nodejs) uninstall_nodejs ;;
+    uninstall_proot_debian) uninstall_proot_debian ;;
+    uninstall_proot_alpine) uninstall_proot_alpine ;;
+    uninstall_proot_distro) uninstall_proot_distro ;;
     uninstall_all_appearance) uninstall_all_appearance ;;
     uninstall_all_basetools) uninstall_all_basetools ;;
+    uninstall_all_multiplexers) uninstall_all_multiplexers ;;
     uninstall_all_devenvs) uninstall_all_devenvs ;;
+    uninstall_all_proot) uninstall_all_proot ;;
     uninstall_master_wipe) uninstall_master_wipe ;;
     *) echo "Uso: $0 <funcion>"; exit 1 ;;
 esac

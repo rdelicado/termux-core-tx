@@ -29,8 +29,12 @@ show_main_menu() {
             "Apariencia        (zsh, p10k, plugins, lsd, bat)"
             "Herramientas Base (git, fzf, zoxide, lazygit, btop)"
             "Entornos Dev      (Neovim, C/C++, Go, Python, Node)"
+            "Multiplexers      (tmux)"
+            "PRoot Distro      (Debian, Alpine)"
+            "Dotfiles Manager  (symlinks hacia $HOME)"
             "Instalar Todo     (todo lo que falte)"
             "Ver Estado        (herramientas instaladas)"
+            "Update CORE-TX    (git pull origin main)"
             "Desinstalador     (eliminar herramientas)"
             "Ver Logs"
             "Salir"
@@ -89,11 +93,15 @@ show_main_menu() {
             0) show_appearance_menu ;;
             1) show_basetools_menu ;;
             2) show_devenv_menu ;;
-            3) execute_action "source \"\$PROJECT_ROOT/modules/01-appearance/install.sh\" && install_all_appearance && source \"\$PROJECT_ROOT/modules/02-base-tools/install.sh\" && install_all_basetools && source \"\$PROJECT_ROOT/modules/03-dev-env/install.sh\" && install_all_devenvs" "Instalación de TODO el sistema" ;;
-            4) show_status ;;
-            5) show_uninstall_menu ;;
-            6) show_logs ;;
-            7) clear; exit 0 ;;
+            3) show_multiplexers_menu ;;
+            4) show_proot_menu ;;
+            5) source "$PROJECT_ROOT/modules/06-dotfiles/install.sh" && show_dotfiles_menu ;;
+            6) execute_action "source \"\$PROJECT_ROOT/modules/01-appearance/install.sh\" && install_all_appearance && source \"\$PROJECT_ROOT/modules/02-base-tools/install.sh\" && install_all_basetools && source \"\$PROJECT_ROOT/modules/03-dev-env/install.sh\" && install_all_devenvs && source \"\$PROJECT_ROOT/modules/04-multiplexers/install.sh\" && install_tmux && source \"\$PROJECT_ROOT/modules/05-proot/install.sh\" && install_proot_distro" "Instalación de TODO el sistema" ;;
+            7) show_status ;;
+            8) source "$PROJECT_ROOT/core/updater.sh" && update_core_tx ;;
+            9) show_uninstall_menu ;;
+            10) show_logs ;;
+            11) clear; exit 0 ;;
         esac
     done
 }
@@ -390,6 +398,144 @@ show_devenv_menu() {
     done
 }
 
+show_multiplexers_menu() {
+    while true; do
+        local options=(
+            "Tmux             (Multiplexor de terminal)"
+            "Volver           (Regresar al menú principal)"
+        )
+        local selected=0
+        local key
+
+        tput civis
+        trap "tput cnorm; exit" INT TERM
+
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}Multiplexers${RESET}\n"
+        tput sc
+
+        while true; do
+            tput rc
+
+            for i in "${!options[@]}"; do
+                if [[ $i -eq $selected ]]; then
+                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                else
+                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                fi
+            done
+
+            echo -e "\e[K"
+            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+
+            read -rsn1 key
+
+            case "$key" in
+                $'\e')
+                    read -rsn2 key
+                    case "$key" in
+                        '[A') ((selected--)) ;;
+                        '[B') ((selected++)) ;;
+                    esac
+                    ;;
+                'k') ((selected--)) ;;
+                'j') ((selected++)) ;;
+                'q') tput cnorm; return ;;
+                "") break ;;
+            esac
+
+            if [[ $selected -lt 0 ]]; then
+                selected=$((${#options[@]} - 1))
+            elif [[ $selected -ge ${#options[@]} ]]; then
+                selected=0
+            fi
+        done
+
+        tput cnorm
+
+        case $selected in
+            0) execute_action "source \"$PROJECT_ROOT/modules/04-multiplexers/install.sh\" && install_tmux" "tmux" ;;
+            1) return ;;
+        esac
+    done
+}
+
+show_proot_menu() {
+    while true; do
+        local options=(
+            "Instalar proot-distro    (Paquete base)"
+            "Instalar Debian          (Distribución Debian)"
+            "Instalar Alpine          (Distribución Alpine)"
+            "Login Debian             (Entrar al contenedor)"
+            "Login Alpine             (Entrar al contenedor)"
+            "Eliminar Debian          (Borrar contenedor)"
+            "Eliminar Alpine          (Borrar contenedor)"
+            "Volver                   (Regresar al menú principal)"
+        )
+        local selected=0
+        local key
+
+        tput civis
+        trap "tput cnorm; exit" INT TERM
+
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}PRoot Distro${RESET}\n"
+        tput sc
+
+        while true; do
+            tput rc
+
+            for i in "${!options[@]}"; do
+                if [[ $i -eq $selected ]]; then
+                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                else
+                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                fi
+            done
+
+            echo -e "\e[K"
+            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+
+            read -rsn1 key
+
+            case "$key" in
+                $'\e')
+                    read -rsn2 key
+                    case "$key" in
+                        '[A') ((selected--)) ;;
+                        '[B') ((selected++)) ;;
+                    esac
+                    ;;
+                'k') ((selected--)) ;;
+                'j') ((selected++)) ;;
+                'q') tput cnorm; return ;;
+                "") break ;;
+            esac
+
+            if [[ $selected -lt 0 ]]; then
+                selected=$((${#options[@]} - 1))
+            elif [[ $selected -ge ${#options[@]} ]]; then
+                selected=0
+            fi
+        done
+
+        tput cnorm
+
+        case $selected in
+            0) execute_action "source \"$PROJECT_ROOT/modules/05-proot/install.sh\" && install_proot_distro" "proot-distro" ;;
+            1) execute_action "source \"$PROJECT_ROOT/modules/05-proot/install.sh\" && install_proot_debian" "Debian" ;;
+            2) execute_action "source \"$PROJECT_ROOT/modules/05-proot/install.sh\" && install_proot_alpine" "Alpine" ;;
+            3) execute_action "source \"$PROJECT_ROOT/modules/05-proot/install.sh\" && login_proot_debian" "Login Debian" ;;
+            4) execute_action "source \"$PROJECT_ROOT/modules/05-proot/install.sh\" && login_proot_alpine" "Login Alpine" ;;
+            5) execute_action "source \"$PROJECT_ROOT/modules/05-proot/install.sh\" && delete_proot_debian" "Eliminar Debian" ;;
+            6) execute_action "source \"$PROJECT_ROOT/modules/05-proot/install.sh\" && delete_proot_alpine" "Eliminar Alpine" ;;
+            7) return ;;
+        esac
+    done
+}
+
 is_installed() {
     command -v "$1" &>/dev/null && return 0 || return 1
 }
@@ -553,6 +699,28 @@ show_status() {
         echo -e "  ${RED}node.js [FALTA]${NC}"
         ((missing++))
     fi
+
+    # MULTIPLEXERS
+    echo -e "\n${PINK}MULTIPLEXERS${NC}"
+
+    if is_installed "tmux"; then
+        echo -e "  ${GREEN}tmux [INSTALADO]${NC}"
+        ((installed++))
+    else
+        echo -e "  ${RED}tmux [FALTA]${NC}"
+        ((missing++))
+    fi
+
+    # PROOT DISTRO
+    echo -e "\n${PINK}PROOT DISTRO${NC}"
+
+    if is_installed "proot-distro"; then
+        echo -e "  ${GREEN}proot-distro [INSTALADO]${NC}"
+        ((installed++))
+    else
+        echo -e "  ${RED}proot-distro [FALTA]${NC}"
+        ((missing++))
+    fi
     
     echo -e "\n  ${GREEN}Instaladas: $installed${NC}   ${RED}Faltantes: $missing${NC}"
     echo -e "\n  ${COLOR_MUTED}Presiona cualquier tecla para volver...${NC}"
@@ -584,6 +752,9 @@ show_uninstall_menu() {
             "Apariencia        (zsh, p10k, plugins, lsd, bat)"
             "Herramientas Base (git, wget, openssh, fzf, btop)"
             "Entornos Dev      (neovim, clang, go, python, node)"
+            "Multiplexers      (tmux)"
+            "PRoot Distro      (Debian, Alpine)"
+            "Dotfiles Manager  (symlinks en $HOME)"
             "Master Wipe       (eliminar TODO excepto git)"
             "Volver            (Regresar al menú principal)"
         )
@@ -641,8 +812,141 @@ show_uninstall_menu() {
             0) show_uninstall_appearance ;;
             1) show_uninstall_basetools ;;
             2) show_uninstall_devenv ;;
-            3) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_master_wipe" "Master Wipe" ;;
-            4) return ;;
+            3) show_uninstall_multiplexers ;;
+            4) show_uninstall_proot ;;
+            5) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_dotfiles" "Desinstalar Dotfiles" ;;
+            6) execute_action "source \"\$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_master_wipe" "Master Wipe" ;;
+            7) return ;;
+        esac
+    done
+}
+
+show_uninstall_multiplexers() {
+    while true; do
+        local options=(
+            "Tmux             (Multiplexor de terminal)"
+            "Volver           (Regresar al menú)"
+        )
+        local selected=0
+        local key
+
+        tput civis
+        trap "tput cnorm; exit" INT TERM
+
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}Desinstalar Multiplexers${RESET}\n"
+        tput sc
+
+        while true; do
+            tput rc
+
+            for i in "${!options[@]}"; do
+                if [[ $i -eq $selected ]]; then
+                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                else
+                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                fi
+            done
+
+            echo -e "\e[K"
+            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+
+            read -rsn1 key
+
+            case "$key" in
+                $'\e')
+                    read -rsn2 key
+                    case "$key" in
+                        '[A') ((selected--)) ;;
+                        '[B') ((selected++)) ;;
+                    esac
+                    ;;
+                'k') ((selected--)) ;;
+                'j') ((selected++)) ;;
+                'q') tput cnorm; return ;;
+                "") break ;;
+            esac
+
+            if [[ $selected -lt 0 ]]; then
+                selected=$((${#options[@]} - 1))
+            elif [[ $selected -ge ${#options[@]} ]]; then
+                selected=0
+            fi
+        done
+
+        tput cnorm
+
+        case $selected in
+            0) execute_action "source \"$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_tmux" "Desinstalar tmux" ;;
+            1) return ;;
+        esac
+    done
+}
+
+show_uninstall_proot() {
+    while true; do
+        local options=(
+            "Debian          (Eliminar contenedor)"
+            "Alpine          (Eliminar contenedor)"
+            "Todo            (Eliminar contenedores y proot-distro)"
+            "Volver          (Regresar al menú)"
+        )
+        local selected=0
+        local key
+
+        tput civis
+        trap "tput cnorm; exit" INT TERM
+
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}Desinstalar PRoot Distro${RESET}\n"
+        tput sc
+
+        while true; do
+            tput rc
+
+            for i in "${!options[@]}"; do
+                if [[ $i -eq $selected ]]; then
+                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                else
+                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                fi
+            done
+
+            echo -e "\e[K"
+            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+
+            read -rsn1 key
+
+            case "$key" in
+                $'\e')
+                    read -rsn2 key
+                    case "$key" in
+                        '[A') ((selected--)) ;;
+                        '[B') ((selected++)) ;;
+                    esac
+                    ;;
+                'k') ((selected--)) ;;
+                'j') ((selected++)) ;;
+                'q') tput cnorm; return ;;
+                "") break ;;
+            esac
+
+            if [[ $selected -lt 0 ]]; then
+                selected=$((${#options[@]} - 1))
+            elif [[ $selected -ge ${#options[@]} ]]; then
+                selected=0
+            fi
+        done
+
+        tput cnorm
+
+        case $selected in
+            0) execute_action "source \"$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_proot_debian" "Eliminar Debian" ;;
+            1) execute_action "source \"$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_proot_alpine" "Eliminar Alpine" ;;
+            2) execute_action "source \"$PROJECT_ROOT/core/uninstaller.sh\" && uninstall_proot_distro" "Desinstalar proot-distro" ;;
+            3) return ;;
         esac
     done
 }
