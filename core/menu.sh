@@ -320,26 +320,167 @@ is_installed() {
 }
 
 show_status() {
-    local tools=("zsh" "git" "fzf" "nvim" "go" "btop" "bat" "lsd" "clang" "python3" "node")
     local installed=0
     local missing=0
+    local GREEN='\033[1;32m'
+    local RED='\033[1;31m'
+    local PINK='\033[1;38;5;211m'
+    local NC='\033[0m'
     
     clear
     banner
-    echo -e "  ${COLOR_TITLE}Estado de Herramientas${RESET}\n"
+    echo -e "  ${PINK}Estado de Herramientas${NC}\n"
     
-    for tool in "${tools[@]}"; do
-        if is_installed "$tool"; then
-            echo -e "    ${COLOR_SELECTED}✔${RESET} ${tool} ${COLOR_UNSELECTED}[INSTALADO]${RESET}"
-            ((installed++))
-        else
-            echo -e "    ${COLOR_MUTED}✖${RESET} ${tool} ${COLOR_MUTED}[FALTA]${RESET}"
-            ((missing++))
-        fi
-    done
+    # APARIENCIA
+    echo -e "\n${PINK}APARIENCIA${NC}"
     
-    echo -e "\n  ${COLOR_SELECTED}Instaladas: $installed${RESET}  ${COLOR_MUTED}|${RESET}  ${COLOR_TITLE}Faltantes: $missing${RESET}"
-    echo -e "\n  ${COLOR_MUTED}Presiona cualquier tecla para volver...${RESET}"
+    if is_installed "zsh"; then
+        echo -e "  ${GREEN}zsh [INSTALADO]${NC}"
+        ((installed++))
+    else
+        echo -e "  ${RED}zsh [FALTA]${NC}"
+        ((missing++))
+    fi
+    
+    if is_installed "lsd"; then
+        echo -e "  ${GREEN}lsd [INSTALADO]${NC}"
+        ((installed++))
+    else
+        echo -e "  ${RED}lsd [FALTA]${NC}"
+        ((missing++))
+    fi
+    
+    if is_installed "bat"; then
+        echo -e "  ${GREEN}bat [INSTALADO]${NC}"
+        ((installed++))
+    else
+        echo -e "  ${RED}bat [FALTA]${NC}"
+        ((missing++))
+    fi
+    
+    if [[ -d "$HOME/.oh-my-zsh" ]]; then
+        echo -e "  ${GREEN}Oh My Zsh [INSTALADO]${NC}"
+        ((installed++))
+    else
+        echo -e "  ${RED}Oh My Zsh [FALTA]${NC}"
+        ((missing++))
+    fi
+    
+    if [[ -d "$HOME/powerlevel10k" ]]; then
+        echo -e "  ${GREEN}Powerlevel10k [INSTALADO]${NC}"
+        ((installed++))
+    else
+        echo -e "  ${RED}Powerlevel10k [FALTA]${NC}"
+        ((missing++))
+    fi
+    
+    if [[ -d "$HOME/.zsh/plugins/zsh-autosuggestions" ]]; then
+        echo -e "  ${GREEN}zsh-autosuggestions [INSTALADO]${NC}"
+        ((installed++))
+    else
+        echo -e "  ${RED}zsh-autosuggestions [FALTA]${NC}"
+        ((missing++))
+    fi
+    
+    if [[ -d "$HOME/.zsh/plugins/zsh-syntax-highlighting" ]]; then
+        echo -e "  ${GREEN}zsh-syntax-highlighting [INSTALADO]${NC}"
+        ((installed++))
+    else
+        echo -e "  ${RED}zsh-syntax-highlighting [FALTA]${NC}"
+        ((missing++))
+    fi
+    
+    # HERRAMIENTAS BASE
+    echo -e "\n${PINK}HERRAMIENTAS BASE${NC}"
+    
+    if is_installed "git"; then
+        echo -e "  ${GREEN}git [INSTALADO]${NC}"
+        ((installed++))
+    else
+        echo -e "  ${RED}git [FALTA]${NC}"
+        ((missing++))
+    fi
+    
+    if is_installed "wget"; then
+        echo -e "  ${GREEN}wget [INSTALADO]${NC}"
+        ((installed++))
+    else
+        echo -e "  ${RED}wget [FALTA]${NC}"
+        ((missing++))
+    fi
+    
+    if is_installed "ssh"; then
+        echo -e "  ${GREEN}openssh [INSTALADO]${NC}"
+        ((installed++))
+    else
+        echo -e "  ${RED}openssh [FALTA]${NC}"
+        ((missing++))
+    fi
+    
+    if is_installed "fzf"; then
+        echo -e "  ${GREEN}fzf [INSTALADO]${NC}"
+        ((installed++))
+    else
+        echo -e "  ${RED}fzf [FALTA]${NC}"
+        ((missing++))
+    fi
+    
+    if is_installed "btop"; then
+        echo -e "  ${GREEN}btop [INSTALADO]${NC}"
+        ((installed++))
+    elif is_installed "htop"; then
+        echo -e "  ${GREEN}htop (fallback) [INSTALADO]${NC}"
+        ((installed++))
+    else
+        echo -e "  ${RED}btop/htop [FALTA]${NC}"
+        ((missing++))
+    fi
+    
+    # ENTORNOS DEV
+    echo -e "\n${PINK}ENTORNOS DEV${NC}"
+    
+    if is_installed "nvim"; then
+        echo -e "  ${GREEN}neovim [INSTALADO]${NC}"
+        ((installed++))
+    else
+        echo -e "  ${RED}neovim [FALTA]${NC}"
+        ((missing++))
+    fi
+    
+    if is_installed "clang"; then
+        echo -e "  ${GREEN}clang (C/C++) [INSTALADO]${NC}"
+        ((installed++))
+    else
+        echo -e "  ${RED}clang (C/C++) [FALTA]${NC}"
+        ((missing++))
+    fi
+    
+    if is_installed "go"; then
+        echo -e "  ${GREEN}go [INSTALADO]${NC}"
+        ((installed++))
+    else
+        echo -e "  ${RED}go [FALTA]${NC}"
+        ((missing++))
+    fi
+    
+    if is_installed "python3" || is_installed "python"; then
+        echo -e "  ${GREEN}python [INSTALADO]${NC}"
+        ((installed++))
+    else
+        echo -e "  ${RED}python [FALTA]${NC}"
+        ((missing++))
+    fi
+    
+    if is_installed "node"; then
+        echo -e "  ${GREEN}node.js [INSTALADO]${NC}"
+        ((installed++))
+    else
+        echo -e "  ${RED}node.js [FALTA]${NC}"
+        ((missing++))
+    fi
+    
+    echo -e "\n  ${GREEN}Instaladas: $installed${NC}   ${RED}Faltantes: $missing${NC}"
+    echo -e "\n  ${COLOR_MUTED}Presiona cualquier tecla para volver...${NC}"
     read -rsn1
 }
 
