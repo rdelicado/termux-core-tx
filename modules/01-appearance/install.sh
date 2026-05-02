@@ -8,8 +8,7 @@ install_zsh() {
     print_info "Instalando zsh..."
     if command -v zsh &>/dev/null; then
         print_warning "zsh ya instalado: $(command -v zsh)"
-        read -p "Reinstalar? [s/N]: " resp
-        [[ "$resp" != "s" && "$resp" != "S" ]] && return 0
+        return 0
     fi
     install_package "zsh"
     
