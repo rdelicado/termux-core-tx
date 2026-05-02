@@ -84,10 +84,10 @@ check_pip_availability() {
 prepare_build_dependencies() {
     print_info "Preparando dependencias de compilación..."
     
-    # Actualizar pip, setuptools y wheel (crítico para compilar desde fuente)
+    # Actualizar pip, setuptools y wheel
     print_info "Actualizando pip, setuptools y wheel..."
     
-    if ! $PYTHON_CMD -m pip install --upgrade pip setuptools wheel --quiet 2>&1 | tee -a /dev/null; then
+    if ! $PYTHON_CMD -m pip install --upgrade pip "setuptools>=70.0.0" wheel --quiet 2>&1 | tee -a /dev/null; then
         print_warning "Aviso al actualizar herramientas de compilación (continuando...)"
     else
         print_success "Herramientas de compilación actualizadas"
@@ -115,16 +115,22 @@ install_aider() {
     echo -e "  ${CYAN}[████████████..................] 50%${NC}"
     
     # Instalación principal - SIN silenciar errores
-    print_info "Ejecutando: $PYTHON_CMD -m pip install aider-chat"
+    # Usar --only-binary para evitar compilar numpy/cryptography en Termux
+    print_info "Ejecutando: $PYTHON_CMD -m pip install --only-binary :all: aider-chat"
     
-    if ! $PYTHON_CMD -m pip install aider-chat; then
-        print_error "Error durante la instalación de aider-chat"
-        print_info "Posibles soluciones:"
-        print_info "  • Verifica tu conexión a Internet"
-        print_info "  • Intenta: $PYTHON_CMD -m pip install --upgrade aider-chat"
-        print_info "  • Libera espacio en disco (~200 MB necesarios)"
-        log_error "aider-chat installation failed"
-        return 1
+    if ! $PYTHON_CMD -m pip install --only-binary :all: aider-chat; then
+        # Si falla con --only-binary, intentar sin esa opción pero con build isolation deshabilitado
+        print_warning "Reintentando sin restricción de compilación..."
+        
+        if ! $PYTHON_CMD -m pip install --no-build-isolation aider-chat; then
+            print_error "Error durante la instalación de aider-chat"
+            print_info "Posibles soluciones:"
+            print_info "  • Verifica tu conexión a Internet"
+            print_info "  • Intenta: $PYTHON_CMD -m pip install --upgrade aider-chat"
+            print_info "  • Libera espacio en disco (~200 MB necesarios)"
+            log_error "aider-chat installation failed"
+            return 1
+        fi
     fi
     
     echo -e "  ${CYAN}[███████████████████████████] 100%${NC}"
