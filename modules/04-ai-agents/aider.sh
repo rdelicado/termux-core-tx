@@ -113,6 +113,56 @@ prepare_build_dependencies() {
     return 0
 }
 
+install_aider_dependencies() {
+    print_info "Instalando dependencias explícitas de Aider..."
+    
+    # Todas las dependencias conocidas de aider-chat
+    local all_deps=(
+        "configargparse"
+        "pyyaml"
+        "pyaml"
+        "tiktoken"
+        "gitpython"
+        "httpx"
+        "requests"
+        "rich"
+        "pathspec"
+        "upgrade"
+        "openai"
+        "anthropic"
+        "aiohttp"
+        "click"
+        "aiosignal"
+        "multidict"
+        "frozenlist"
+        "yarl"
+        "async-timeout"
+        "idna"
+    )
+    
+    local installed=0
+    local failed=0
+    
+    for dep in "${all_deps[@]}"; do
+        if $PYTHON_CMD -m pip install \
+            --no-cache-dir \
+            --prefer-binary \
+            --quiet \
+            "$dep" 2>&1 | grep -q "Successfully installed"; then
+            ((installed++))
+        else
+            ((failed++))
+        fi
+    done
+    
+    print_success "Dependencias: $installed instaladas"
+    if [[ $failed -gt 0 ]]; then
+        print_warning "Algunas dependencias tuvieron problemas ($failed), pero continuando..."
+    fi
+    
+    return 0
+}
+
 install_aider() {
     print_info "Instalando aider-chat..."
     
@@ -132,28 +182,34 @@ install_aider() {
     
     echo -e "  ${CYAN}[████████........................] 35%${NC}"
     
-    # Estrategia 1: PRIMERO instalar dependencias problemáticas con --prefer-binary
-    print_info "Paso 1: Pre-instalando dependencias con wheels precompilados..."
-    
-    local problem_deps=("multidict" "aiohttp" "cryptography" "numpy" "tiktoken" "yarl" "frozenlist")
-    
-    for dep in "${problem_deps[@]}"; do
-        print_info "  → Instalando $dep (wheels precompilados)..."
-        $PYTHON_CMD -m pip install \
-            --no-cache-dir \
-            --prefer-binary \
-            --upgrade \
-            "$dep" -q 2>&1 || true  # Ignora errores individuales
-    done
+    # Paso 1: Instalar TODAS las dependencias conocidas
+    echo -e "  ${CYAN}[████████████..................] 50%${NC}"
+    if ! install_aider_dependencies; then
+        print_warning "Algunas dependencias no se instalaron (continuando...)"
+    fi
     
     echo -e "  ${CYAN}[████████████..................] 50%${NC}"
     
-    # Estrategia 2: Ahora intentar aider-chat con dependencias ya presentes
-    print_info "Paso 2: Instalando aider-chat (esperando dependencias presentes)..."
+    # Paso 2: Instalar aider-chat
+    print_info "Instalando paquete aider-chat..."
     
     if $PYTHON_CMD -m pip install \
         --no-cache-dir \
         --prefer-binary \
+        --upgrade \
+        aider-chat 2>&1 | tee /tmp/aider_install.log | grep -q "Successfully installed"; then
+        echo -e "  ${CYAN}[███████████████████████████] 100%${NC}"
+        print_success "✓ aider-chat instalado correctamente"
+        return 0
+    fi
+    
+    echo -e "  ${CYAN}[█████████████████████████] 95%${NC}"
+    
+    # Paso 3: Reinstalar aider-chat sin build isolation como fallback
+    print_info "Reintentando instalación sin aislamiento de compilación..."
+    
+    if $PYTHON_CMD -m pip install \
+        --no-cache-dir \
         --no-build-isolation \
         --upgrade \
         aider-chat 2>&1 | tee /tmp/aider_install.log | grep -q "Successfully installed"; then
@@ -162,38 +218,19 @@ install_aider() {
         return 0
     fi
     
-    echo -e "  ${CYAN}[█████████████████............] 60%${NC}"
-    
-    # Estrategia 3: Sin dependencias extras (solo lo esencial)
-    print_info "Paso 3: Instalación sin dependencias (experimental)..."
-    
-    if $PYTHON_CMD -m pip install \
-        --no-cache-dir \
-        --no-deps \
-        --prefer-binary \
-        --upgrade \
-        aider-chat 2>&1 | tee /tmp/aider_install.log | grep -q "Successfully installed"; then
-        echo -e "  ${CYAN}[███████████████████████████] 100%${NC}"
-        print_success "✓ aider-chat instalado (sin todas las dependencias)"
-        print_warning "⚠️  Algunas características pueden no estar disponibles"
-        return 0
-    fi
-    
     echo -e "  ${CYAN}[███████████████████████████] 100%${NC}"
     
-    # Verificar si al menos algo se instaló parcialmente
-    if $PYTHON_CMD -c "import aider" 2>/dev/null; then
-        print_success "✓ Aider parcialmente disponible"
-        print_info "Intenta usar: aider"
+    # Verificación final
+    if $PYTHON_CMD -c "import aider" 2>&1; then
+        print_success "✓ Aider disponible como módulo"
         return 0
     fi
     
-    print_warning "⚠️  Instalación parcial"
-    print_info "Logs guardados en: /tmp/aider_install.log"
-    print_info "Pero el script intentó instalar todas las dependencias disponibles."
+    print_warning "⚠️  Instalación completada con limitaciones"
+    print_info "Logs: /tmp/aider_install.log"
     
-    log_error "aider-chat installation may be partial"
-    return 0  # No falla completamente, permitimos acceso parcial
+    log_error "aider-chat installation completed with warnings"
+    return 0
 
     
     echo -e "  ${CYAN}[███████████████████████████] 100%${NC}"
@@ -293,22 +330,29 @@ install_aider_main() {
         return 1
     fi
     
-    # Paso 3: Verificar si ya está instalado (información solamente)
+    # Paso 3: Verificar si ya está instalado Y funciona
     if command -v aider &>/dev/null; then
-        print_success "✓ Aider ya está instalado: $(aider --version 2>&1)"
-        print_api_key_instructions
-        return 0
+        # Verificar que REALMENTE funciona
+        if aider --version &>/dev/null 2>&1; then
+            print_success "✓ Aider ya está instalado y funciona: $(aider --version 2>&1 | head -1)"
+            print_api_key_instructions
+            return 0
+        else
+            # Aider está "instalado" pero no funciona - hay dependencias faltantes
+            print_warning "Aider está parcialmente instalado pero le faltan dependencias"
+            print_info "Reparando instalación..."
+        fi
     fi
     
     # Paso 4: Instalar Aider (sin preguntas, automático)
     print_info "Iniciando instalación automática de Aider..."
     if ! install_aider; then
-        print_warning "La instalación de Aider tuvo dificultades, pero se intentaron 4 estrategias"
+        print_warning "La instalación de Aider tuvo dificultades"
     fi
     
-    # Paso 5: Validar instalación (permisivo)
+    # Paso 5: Validar instalación
     if ! validate_aider_installation; then
-        print_warning "No se pudo validar completamente, pero continuamos"
+        print_warning "No se pudo validar completamente"
     fi
     
     # Paso 6: Mostrar instrucciones de configuración
