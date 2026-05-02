@@ -105,6 +105,7 @@ show_appearance_menu() {
             "Syntax Highlight  (Colorea comandos en tiempo real)"
             "LSD               (ls moderno con iconos)"
             "Bat               (cat con syntax highlighting)"
+            "Fuentes           (Nerd Fonts para iconos de p10k)"
             "Instalar Todo     (Instalar toda la apariencia)"
             "Volver            (Regresar al menú principal)"
         )
@@ -165,8 +166,78 @@ show_appearance_menu() {
             3) execute_action "bash \"\$PROJECT_ROOT/modules/01-appearance/install.sh\"" "Plugins ZSH" ;;
             4) execute_action "pkg install lsd -y" "LSD" ;;
             5) execute_action "pkg install bat -y" "Bat" ;;
-            6) execute_action "bash \"\$PROJECT_ROOT/modules/01-appearance/install.sh\"" "Instalación Completa Apariencia" ;;
-            7) return ;;
+            6) show_fonts_menu ;;
+            7) execute_action "bash \"\$PROJECT_ROOT/modules/01-appearance/install.sh\"" "Instalación Completa Apariencia" ;;
+            8) return ;;
+        esac
+    done
+}
+
+show_fonts_menu() {
+    while true; do
+        local options=(
+            "MesloLGS          (Recomendada para p10k)"
+            "Hack Nerd Font    (Popular y completa)"
+            "JetBrains Mono    (Con ligaduras)"
+            "Fira Code         (Ligaduras y moderna)"
+            "Volver            (Regresar al menú)"
+        )
+        local selected=0
+        local key
+
+        tput civis
+        trap "tput cnorm; exit" INT TERM
+
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}Fuentes Nerd Fonts${RESET}\n"
+        tput sc
+
+        while true; do
+            tput rc
+            
+            for i in "${!options[@]}"; do
+                if [[ $i -eq $selected ]]; then
+                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                else
+                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                fi
+            done
+
+            echo -e "\e[K"
+            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+
+            read -rsn1 key
+
+            case "$key" in
+                $'\e')
+                    read -rsn2 key
+                    case "$key" in
+                        '[A') ((selected--));;
+                        '[B') ((selected++));;
+                    esac
+                    ;;
+                'k') ((selected--));;
+                'j') ((selected++));;
+                'q') tput cnorm; return ;;
+                "") break ;;
+            esac
+
+            if [[ $selected -lt 0 ]]; then
+                selected=$((${#options[@]} - 1))
+            elif [[ $selected -ge ${#options[@]} ]]; then
+                selected=0
+            fi
+        done
+
+        tput cnorm
+
+        case $selected in
+            0) execute_action "bash \"\$PROJECT_ROOT/modules/01-appearance/fonts.sh\" Meslo" "Fuente MesloLGS" ;;
+            1) execute_action "bash \"\$PROJECT_ROOT/modules/01-appearance/fonts.sh\" Hack" "Fuente Hack Nerd Font" ;;
+            2) execute_action "bash \"\$PROJECT_ROOT/modules/01-appearance/fonts.sh\" JetBrainsMono" "Fuente JetBrains Mono" ;;
+            3) execute_action "bash \"\$PROJECT_ROOT/modules/01-appearance/fonts.sh\" FiraCode" "Fuente Fira Code" ;;
+            4) return ;;
         esac
     done
 }

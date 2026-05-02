@@ -173,6 +173,10 @@ install_all_appearance() {
     install_zsh_plugins
     install_lsd
     install_bat
+    
+    print_info "Instalando fuente MesloLGS para Powerlevel10k..."
+    bash "$PROJECT_ROOT/modules/01-appearance/fonts.sh" Meslo
+    
     print_success "Apariencia completa instalada"
 }
 
