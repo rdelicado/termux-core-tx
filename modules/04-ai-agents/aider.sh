@@ -81,6 +81,21 @@ check_pip_availability() {
     return 0
 }
 
+prepare_build_dependencies() {
+    print_info "Preparando dependencias de compilación..."
+    
+    # Actualizar pip, setuptools y wheel (crítico para compilar desde fuente)
+    print_info "Actualizando pip, setuptools y wheel..."
+    
+    if ! $PYTHON_CMD -m pip install --upgrade pip setuptools wheel --quiet 2>&1 | tee -a /dev/null; then
+        print_warning "Aviso al actualizar herramientas de compilación (continuando...)"
+    else
+        print_success "Herramientas de compilación actualizadas"
+    fi
+    
+    return 0
+}
+
 install_aider() {
     print_info "Instalando aider-chat..."
     
@@ -90,6 +105,14 @@ install_aider() {
     if $PYTHON_CMD -m pip install --upgrade pip --quiet 2>&1 | grep -v "already satisfied" > /dev/null; then
         echo -e "  ${CYAN}[██████........................] 25%${NC}"
     fi
+    
+    # Preparar dependencias de compilación (setuptools, wheel)
+    if ! prepare_build_dependencies; then
+        print_error "No se pudieron preparar las dependencias de compilación"
+        return 1
+    fi
+    
+    echo -e "  ${CYAN}[████████████..................] 50%${NC}"
     
     # Instalación principal - SIN silenciar errores
     print_info "Ejecutando: $PYTHON_CMD -m pip install aider-chat"
