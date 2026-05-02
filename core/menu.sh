@@ -1,9 +1,9 @@
 #!/bin/bash
 
-COLOR_TITLE='[1;38;5;51m'
-COLOR_SELECTED='[1;38;5;231m'
-COLOR_UNSELECTED='[38;5;245m'
-COLOR_MUTED='[38;5;240m'
+COLOR_TITLE='\033[1;38;5;51m'
+COLOR_SELECTED='\033[1;38;5;231m'
+COLOR_UNSELECTED='\033[38;5;245m'
+COLOR_MUTED='\033[38;5;240m'
 RESET='\033[0m'
 COLOR_ACCENT='\033[1;38;5;51m'
 COLOR_BG_SEL='\033[48;5;236m'
@@ -48,12 +48,12 @@ show_main_menu() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-                clear
-                while true; do
-                    printf '\033[H'
-                    banner
-            echo -e "  ${COLOR_TITLE}Actions${RESET}\n"
-            
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}Actions${RESET}\n"
+
+        while true; do
+            printf '\033[H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -127,12 +127,12 @@ show_appearance_menu() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-                clear
-                while true; do
-                    printf '\033[H'
-                    banner
-            echo -e "  ${COLOR_TITLE}Apariencia${RESET}\n"
-            
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}Apariencia${RESET}\n"
+
+        while true; do
+            printf '\033[H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -199,12 +199,12 @@ show_fonts_menu() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-                clear
-                while true; do
-                    printf '\033[H'
-                    banner
-            echo -e "  ${COLOR_TITLE}Fuentes Nerd Fonts${RESET}\n"
-            
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}Fuentes Nerd Fonts${RESET}\n"
+
+        while true; do
+            printf '\033[H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -269,12 +269,12 @@ show_basetools_menu() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-                clear
-                while true; do
-                    printf '\033[H'
-                    banner
-            echo -e "  ${COLOR_TITLE}Herramientas Base${RESET}\n"
-            
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}Herramientas Base${RESET}\n"
+
+        while true; do
+            printf '\033[H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -341,12 +341,12 @@ show_devenv_menu() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-                clear
-                while true; do
-                    printf '\033[H'
-                    banner
-            echo -e "  ${COLOR_TITLE}Entornos de Desarrollo${RESET}\n"
-            
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}Entornos de Desarrollo${RESET}\n"
+
+        while true; do
+            printf '\033[H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -408,12 +408,12 @@ show_multiplexers_menu() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-                clear
-                while true; do
-                    printf '\033[H'
-                    banner
-            echo -e "  ${COLOR_TITLE}Multiplexers${RESET}\n"
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}Multiplexers${RESET}\n"
 
+        while true; do
+            printf '\033[H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -476,12 +476,12 @@ show_proot_menu() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-                clear
-                while true; do
-                    printf '\033[H'
-                    banner
-            echo -e "  ${COLOR_TITLE}PRoot Distro${RESET}\n"
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}PRoot Distro${RESET}\n"
 
+        while true; do
+            printf '\033[H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -548,7 +548,6 @@ show_status() {
     banner
     echo -e "  ${PINK}Estado de Herramientas${NC}\n"
     
-    # APARIENCIA
     echo -e "\n${PINK}APARIENCIA${NC}"
     
     if is_installed "zsh"; then
@@ -607,7 +606,6 @@ show_status() {
         ((missing++))
     fi
     
-    # HERRAMIENTAS BASE
     echo -e "\n${PINK}HERRAMIENTAS BASE${NC}"
     
     if is_installed "git"; then
@@ -653,7 +651,6 @@ show_status() {
         ((missing++))
     fi
     
-    # ENTORNOS DEV
     echo -e "\n${PINK}ENTORNOS DEV${NC}"
     
     if is_installed "nvim"; then
@@ -696,7 +693,6 @@ show_status() {
         ((missing++))
     fi
 
-    # MULTIPLEXERS
     echo -e "\n${PINK}MULTIPLEXERS${NC}"
 
     if is_installed "tmux"; then
@@ -707,7 +703,6 @@ show_status() {
         ((missing++))
     fi
 
-    # PROOT DISTRO
     echo -e "\n${PINK}PROOT DISTRO${NC}"
 
     if is_installed "proot-distro"; then
@@ -760,12 +755,12 @@ show_uninstall_menu() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-                clear
-                while true; do
-                    printf '\033[H'
-                    banner
-            echo -e "  ${COLOR_TITLE}Desinstalador Inteligente${RESET}\n"
-            
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}Desinstalador Inteligente${RESET}\n"
+
+        while true; do
+            printf '\033[H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -828,12 +823,12 @@ show_uninstall_multiplexers() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-                clear
-                while true; do
-                    printf '\033[H'
-                    banner
-            echo -e "  ${COLOR_TITLE}Desinstalar Multiplexers${RESET}\n"
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}Desinstalar Multiplexers${RESET}\n"
 
+        while true; do
+            printf '\033[H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -892,12 +887,12 @@ show_uninstall_proot() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-                clear
-                while true; do
-                    printf '\033[H'
-                    banner
-            echo -e "  ${COLOR_TITLE}Desinstalar PRoot Distro${RESET}\n"
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}Desinstalar PRoot Distro${RESET}\n"
 
+        while true; do
+            printf '\033[H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -962,12 +957,12 @@ show_uninstall_appearance() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-                clear
-                while true; do
-                    printf '\033[H'
-                    banner
-            echo -e "  ${COLOR_TITLE}Desinstalar Apariencia${RESET}\n"
-            
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}Desinstalar Apariencia${RESET}\n"
+
+        while true; do
+            printf '\033[H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -1034,12 +1029,12 @@ show_uninstall_basetools() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-                clear
-                while true; do
-                    printf '\033[H'
-                    banner
-            echo -e "  ${COLOR_TITLE}Desinstalar Herramientas Base${RESET}\n"
-            
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}Desinstalar Herramientas Base${RESET}\n"
+
+        while true; do
+            printf '\033[H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -1105,12 +1100,12 @@ show_uninstall_devenv() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-                clear
-                while true; do
-                    printf '\033[H'
-                    banner
-            echo -e "  ${COLOR_TITLE}Desinstalar Entornos Dev${RESET}\n"
-            
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}Desinstalar Entornos Dev${RESET}\n"
+
+        while true; do
+            printf '\033[H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
