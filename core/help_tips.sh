@@ -45,134 +45,6 @@ show_help() {
   Plugins ZSH
     - zsh-autosuggestions: Sugiere comandos del historial
     - zsh-syntax-highlighting: Colores en tiempo real mientras escribes
-    - Ubic.: ~/.zsh/plugins/
-
-  LSD & Bat
-    - LSD: 'ls' moderno con iconos y colores
-    - Bat: 'cat' con resaltado de sintaxis
-    - Alias útil: alias ls='lsd', alias cat='bat'
-
-
-🔧 HERRAMIENTAS BASE
-─────────────────────────────────────────────────────────────────────────────
-
-  Git
-    - Control de versiones
-    - Config inicial: git config --global user.name "Nombre"
-    - Genera clave SSH: ssh-keygen -t ed25519 -C "email@example.com"
-
-  Wget
-    - Descargador de archivos desde línea de comandos
-    - Uso: wget https://ejemplo.com/archivo.tar.gz
-
-  OpenSSH
-    - Conexiones SSH remota y segura
-    - Servidor SSH: sshd (en Termux requiere servicio)
-    - Cliente: ssh usuario@host
-
-  FZF
-    - Buscador fuzzy interactivo de archivos
-    - Ctrl+R: búsqueda en historial
-    - Ctrl+T: insertar nombre de archivo en comando
-
-  Btop/Htop
-    - Monitores de recursos del sistema
-    - Btop: Más moderno y visual
-    - Htop: Fallback si btop no está disponible
-
-
-💻 ENTORNOS DE DESARROLLO
-─────────────────────────────────────────────────────────────────────────────
-
-  Neovim
-    - Editor vim moderno y extensible
-    - Instalación config: ~/.config/nvim/init.vim
-    - Comando: nvim archivo.txt
-
-  Clang (C/C++)
-    - Compilador de C/C++ de LLVM
-    - Compile: clang -o programa programa.c
-    - C++: clang++ -o programa programa.cpp
-
-  Go
-    - Lenguaje compilado para aplicaciones rápidas
-    - Workspace: ~/go/
-    - Compilar: go build main.go
-
-  Python
-    - Lenguaje interpretado versátil
-    - Gestor paquetes: pip install paquete
-    - Virtual env: python3 -m venv venv
-
-  Node.js
-    - Runtime JavaScript en servidor
-    - Gestor paquetes: npm
-    - Framework popular: Express, Next.js
-
-
-🤖 AGENTES IA
-─────────────────────────────────────────────────────────────────────────────
-
-  AIDER - Editor Asistido por IA
-    ──────────────────────────────
-    
-    ¿Qué es?
-      - Agente de IA que edita archivos de código automáticamente
-      - Entiende contexto completo del proyecto
-      - Genera cambios, refactorización, fixes automáticos
-
-    Requisitos
-      ✓ Python 3 (con pip)
-      ✓ Conexión a Internet
-      ✓ API Key de OpenAI (GPT-4) o Anthropic (Claude)
-
-    Instalación
-      $ ./bin/main.sh → Agentes IA → Aider
-      El instalador:
-        1. Verifica Python y pip
-        2. Instala aider-chat
-        3. Valida la instalación
-        4. Guía configuración de API Key
-
-    Configuración de API Key
-      ────────────────────────
-      
-      Opción 1: OpenAI (GPT-4)
-        1. Ve a: https://platform.openai.com/api-keys
-        2. Crea una API Key nueva
-        3. Copia la clave
-        4. Añade a ~/.zshrc:
-           export OPENAI_API_KEY='sk-...'
-        5. Recarga: source ~/.zshrc
-
-      Opción 2: Anthropic (Claude)
-        1. Ve a: https://console.anthropic.com/
-        2. Obtén tu API Key
-        3. Añade a ~/.zshrc:
-           export ANTHROPIC_API_KEY='sk-ant-...'
-        4. Recarga: source ~/.zshrc
-
-    Uso Básico
-      ──────────
-      $ aider                      # Editar archivos en directorio actual
-      $ aider archivo.py           # Editar archivo específico
-      $ aider src/                 # Editar carpeta completa
-      
-      En la sesión de Aider:
-        - Describe qué quieres que haga
-        - Aider lee todos los archivos
-        - Hace cambios automáticos
-        - Muestra diffs antes de aplicar
-        - Presiona 'y' para aceptar cambios
-
-    Ejemplos Prácticos
-      ──────────────────
-      
-      "Añade docstrings a todas las funciones"
-      "Refactoriza este código para ser más pythónico"
-      "Corrige este bug en la lógica de autenticación"
-      "Mejora el rendimiento de esta consulta"
-      "Escribe tests unitarios para este módulo"
 
     Solución de Problemas
       ──────────────────
@@ -189,7 +61,6 @@ show_help() {
       Respuestas lentas
         → Normal para GPT-4 (5-30 segundos)
         → GPT-3.5 es más rápido pero menos preciso
-        → Intenta: export AIDER_MODEL=gpt-3.5-turbo
 
       Cambios no se aplican
         → Revisa que hayas presionado 'y' para confirmar
@@ -212,42 +83,6 @@ EOF
 # ============================================================================
 # TIPS POR HERRAMIENTA
 # ============================================================================
-
-tip_aider() {
-    cat << 'EOF'
-
-╔════════════════════════════════════════════════════════════════════════════╗
-║                     TIP: AIDER - Editor IA                                ║
-╚════════════════════════════════════════════════════════════════════════════╝
-
-Aider es un agente de IA que edita código automáticamente basado en tus
-instrucciones en lenguaje natural.
-
-✓ REQUIERE CONFIGURACIÓN:
-  • Obtén una API Key (OpenAI o Anthropic)
-  • Configura en ~/.zshrc: export OPENAI_API_KEY='tu-clave'
-  • Recarga: source ~/.zshrc
-
-✓ USO BÁSICO:
-  $ aider                         # Sesión interactiva
-  $ aider archivo.py otro.js      # Editar múltiples archivos
-  $ aider src/                    # Editar carpeta completa
-
-✓ EJEMPLOS:
-  • "Añade type hints a todas las funciones"
-  • "Refactoriza para mejor legibilidad"
-  • "Escribe tests unitarios"
-  • "Corrige este error de lógica"
-
-✓ SOLUCIONAR PROBLEMAS:
-  $ aider --version              # Verificar instalación
-  $ echo $OPENAI_API_KEY         # Verificar API Key
-  $ source ~/.zshrc              # Recargar variables
-
-Más info: https://aider.chat/
-
-EOF
-}
 
 tip_zsh() {
     cat << 'EOF'
@@ -361,7 +196,6 @@ EOF
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     if [[ -n "$1" ]]; then
         case "$1" in
-            aider) tip_aider ;;
             zsh) tip_zsh ;;
             git) tip_git ;;
             neovim|nvim) tip_neovim ;;

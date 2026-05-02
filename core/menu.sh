@@ -29,7 +29,6 @@ show_main_menu() {
             "Apariencia        (zsh, p10k, plugins, lsd, bat)"
             "Herramientas Base (git, fzf, zoxide, lazygit, btop)"
             "Entornos Dev      (Neovim, C/C++, Go, Python, Node)"
-            "Agentes IA        (aider - editor asistido por IA)"
             "Instalar Todo     (todo lo que falte)"
             "Ver Estado        (herramientas instaladas)"
             "Desinstalador     (eliminar herramientas)"
@@ -90,12 +89,11 @@ show_main_menu() {
             0) show_appearance_menu ;;
             1) show_basetools_menu ;;
             2) show_devenv_menu ;;
-            3) show_ai_agents_menu ;;
-            4) execute_action "source \"\$PROJECT_ROOT/modules/01-appearance/install.sh\" && install_all_appearance && source \"\$PROJECT_ROOT/modules/02-base-tools/install.sh\" && install_all_basetools && source \"\$PROJECT_ROOT/modules/03-dev-env/install.sh\" && install_all_devenvs" "Instalación de TODO el sistema" ;;
-            5) show_status ;;
-            6) show_uninstall_menu ;;
-            7) show_logs ;;
-            8) clear; exit 0 ;;
+            3) execute_action "source \"\$PROJECT_ROOT/modules/01-appearance/install.sh\" && install_all_appearance && source \"\$PROJECT_ROOT/modules/02-base-tools/install.sh\" && install_all_basetools && source \"\$PROJECT_ROOT/modules/03-dev-env/install.sh\" && install_all_devenvs" "Instalación de TODO el sistema" ;;
+            4) show_status ;;
+            5) show_uninstall_menu ;;
+            6) show_logs ;;
+            7) clear; exit 0 ;;
         esac
     done
 }
@@ -242,69 +240,6 @@ show_fonts_menu() {
             2) execute_action "bash \"\$PROJECT_ROOT/modules/01-appearance/fonts.sh\" JetBrainsMono" "Fuente JetBrains Mono" ;;
             3) execute_action "bash \"\$PROJECT_ROOT/modules/01-appearance/fonts.sh\" FiraCode" "Fuente Fira Code" ;;
             4) return ;;
-        esac
-    done
-}
-
-show_ai_agents_menu() {
-    while true; do
-        local options=(
-            "Aider             (Editor asistido por IA)"
-            "Volver            (Regresar al menú principal)"
-        )
-        local selected=0
-        local key
-
-        tput civis
-        trap "tput cnorm; exit" INT TERM
-
-        clear
-        banner
-        echo -e "  ${COLOR_TITLE}Agentes IA${RESET}\n"
-        tput sc
-
-        while true; do
-            tput rc
-            
-            for i in "${!options[@]}"; do
-                if [[ $i -eq $selected ]]; then
-                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
-                else
-                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
-                fi
-            done
-
-            echo -e "\e[K"
-            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
-
-            read -rsn1 key
-
-            case "$key" in
-                $'\e')
-                    read -rsn2 key
-                    case "$key" in
-                        '[A') ((selected--));;
-                        '[B') ((selected++));;
-                    esac
-                    ;;
-                'k') ((selected--));;
-                'j') ((selected++));;
-                'q') tput cnorm; return ;;
-                "") break ;;
-            esac
-
-            if [[ $selected -lt 0 ]]; then
-                selected=$((${#options[@]} - 1))
-            elif [[ $selected -ge ${#options[@]} ]]; then
-                selected=0
-            fi
-        done
-
-        tput cnorm
-
-        case $selected in
-            0) execute_action "bash \"\$PROJECT_ROOT/modules/04-ai-agents/aider.sh\"" "Aider - Agente de Código IA" ;;
-            1) return ;;
         esac
     done
 }
@@ -616,17 +551,6 @@ show_status() {
         ((installed++))
     else
         echo -e "  ${RED}node.js [FALTA]${NC}"
-        ((missing++))
-    fi
-    
-    # AGENTES IA
-    echo -e "\n${PINK}AGENTES IA${NC}"
-    
-    if is_installed "aider"; then
-        echo -e "  ${GREEN}aider [INSTALADO]${NC}"
-        ((installed++))
-    else
-        echo -e "  ${RED}aider [FALTA]${NC}"
         ((missing++))
     fi
     
