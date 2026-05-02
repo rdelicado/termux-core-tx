@@ -1,10 +1,13 @@
 #!/bin/bash
 
-COLOR_TITLE='\033[1;38;5;211m'
-COLOR_SELECTED='\033[1;38;5;225m'
-COLOR_UNSELECTED='\033[38;5;250m'
-COLOR_MUTED='\033[38;5;240m'
+COLOR_TITLE='[1;38;5;51m'
+COLOR_SELECTED='[1;38;5;231m'
+COLOR_UNSELECTED='[38;5;245m'
+COLOR_MUTED='[38;5;240m'
 RESET='\033[0m'
+COLOR_ACCENT='\033[1;38;5;51m'
+COLOR_BG_SEL='\033[48;5;236m'
+COLOR_SIZE='\033[38;5;213m'
 
 execute_action() {
     local command="$1"
@@ -26,18 +29,18 @@ execute_action() {
 show_main_menu() {
     while true; do
         local options=(
-            "Apariencia        [~150MB] (zsh, p10k, plugins, lsd, bat)"
-            "Herramientas Base [~40MB]  (git, fzf, zoxide, lazygit, btop)"
-            "Entornos Dev      [~900MB] (Neovim, C/C++, Go, Python, Node)"
-            "Multiplexers      [~5MB]   (tmux)"
-            "PRoot Distro      [~150MB] (Debian, Alpine)"
-            "Dotfiles Manager  [~1MB]   (symlinks hacia \$HOME)"
-            "Instalar Todo     [~1.2GB] (todo lo que falte)"
-            "Ver Estado                 (herramientas instaladas)"
-            "Update CORE-TX             (git pull origin main)"
-            "Desinstalador              (eliminar herramientas)"
-            "Ver Logs"
-            "Salir"
+            "Apariencia|~150MB"
+            "Herramientas Base|~40MB"
+            "Entornos Dev|~900MB"
+            "Multiplexers|~5MB"
+            "PRoot Distro|~150MB"
+            "Dotfiles Manager|~1MB"
+            "Instalar Todo|~1.2GB"
+            "Ver Estado|"
+            "Update CORE-TX|"
+            "Desinstalador|"
+            "Ver Logs|"
+            "Salir|"
         )
         local selected=0
         local key
@@ -54,15 +57,16 @@ show_main_menu() {
             tput rc
             
             for i in "${!options[@]}"; do
+                IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
-                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                    printf "\e[K  ${COLOR_ACCENT}┃${COLOR_BG_SEL} ${COLOR_SELECTED}%-26s ${COLOR_SIZE}%7s ${RESET}\n" "$name" "$size"
                 else
-                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                    printf "\e[K    ${COLOR_UNSELECTED}%-26s ${COLOR_MUTED}%7s ${RESET}\n" "$name" "$size"
                 fi
             done
 
             echo -e "\e[K"
-            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+            echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
 
             read -rsn1 key
 
@@ -109,15 +113,15 @@ show_main_menu() {
 show_appearance_menu() {
     while true; do
         local options=(
-            "ZSH + Oh My Zsh    (Motor de terminal avanzado)"
-            "Powerlevel10k     (Tema con icons y segmentos)"
-            "Autosuggestions   (Sugiere comandos del historial)"
-            "Syntax Highlight  (Colorea comandos en tiempo real)"
-            "LSD               (ls moderno con iconos)"
-            "Bat               (cat con syntax highlighting)"
-            "Fuentes           (Nerd Fonts para iconos de p10k)"
-            "Instalar Todo     (Instalar toda la apariencia)"
-            "Volver            (Regresar al menú principal)"
+            "ZSH + Oh My Zsh|"
+            "Powerlevel10k|"
+            "Autosuggestions|"
+            "Syntax Highlight|"
+            "LSD|"
+            "Bat|"
+            "Fuentes|"
+            "Instalar Todo|"
+            "Volver|"
         )
         local selected=0
         local key
@@ -134,15 +138,16 @@ show_appearance_menu() {
             tput rc
             
             for i in "${!options[@]}"; do
+                IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
-                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                    printf "\e[K  ${COLOR_ACCENT}┃${COLOR_BG_SEL} ${COLOR_SELECTED}%-26s ${COLOR_SIZE}%7s ${RESET}\n" "$name" "$size"
                 else
-                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                    printf "\e[K    ${COLOR_UNSELECTED}%-26s ${COLOR_MUTED}%7s ${RESET}\n" "$name" "$size"
                 fi
             done
 
             echo -e "\e[K"
-            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+            echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
 
             read -rsn1 key
 
@@ -186,11 +191,11 @@ show_appearance_menu() {
 show_fonts_menu() {
     while true; do
         local options=(
-            "MesloLGS          (Recomendada para p10k)"
-            "Hack Nerd Font    (Popular y completa)"
-            "JetBrains Mono    (Con ligaduras)"
-            "Fira Code         (Ligaduras y moderna)"
-            "Volver            (Regresar al menú)"
+            "MesloLGS|"
+            "Hack Nerd Font|"
+            "JetBrains Mono|"
+            "Fira Code|"
+            "Volver|"
         )
         local selected=0
         local key
@@ -207,15 +212,16 @@ show_fonts_menu() {
             tput rc
             
             for i in "${!options[@]}"; do
+                IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
-                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                    printf "\e[K  ${COLOR_ACCENT}┃${COLOR_BG_SEL} ${COLOR_SELECTED}%-26s ${COLOR_SIZE}%7s ${RESET}\n" "$name" "$size"
                 else
-                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                    printf "\e[K    ${COLOR_UNSELECTED}%-26s ${COLOR_MUTED}%7s ${RESET}\n" "$name" "$size"
                 fi
             done
 
             echo -e "\e[K"
-            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+            echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
 
             read -rsn1 key
 
@@ -255,13 +261,13 @@ show_fonts_menu() {
 show_basetools_menu() {
     while true; do
         local options=(
-            "Git               (Control de versiones)"
-            "Wget              (Descargador de archivos)"
-            "OpenSSH           (Conexión remota segura)"
-            "FZF               (Buscador fuzzy interactivo)"
-            "Btop/Htop         (Monitor de recursos del sistema)"
-            "Instalar Todo     (Todas las herramientas base)"
-            "Volver            (Regresar al menú principal)"
+            "Git|"
+            "Wget|"
+            "OpenSSH|"
+            "FZF|"
+            "Btop/Htop|"
+            "Instalar Todo|"
+            "Volver|"
         )
         local selected=0
         local key
@@ -278,15 +284,16 @@ show_basetools_menu() {
             tput rc
             
             for i in "${!options[@]}"; do
+                IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
-                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                    printf "\e[K  ${COLOR_ACCENT}┃${COLOR_BG_SEL} ${COLOR_SELECTED}%-26s ${COLOR_SIZE}%7s ${RESET}\n" "$name" "$size"
                 else
-                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                    printf "\e[K    ${COLOR_UNSELECTED}%-26s ${COLOR_MUTED}%7s ${RESET}\n" "$name" "$size"
                 fi
             done
 
             echo -e "\e[K"
-            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+            echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
 
             read -rsn1 key
 
@@ -328,13 +335,13 @@ show_basetools_menu() {
 show_devenv_menu() {
     while true; do
         local options=(
-            "Neovim            (Editor vim moderno)"
-            "C/C++ (Clang)    (Compilador para C/C++)"
-            "Go               (Lenguaje de Google)"
-            "Python           (Lenguaje interpretado)"
-            "Node.js          (JS del lado del servidor)"
-            "Instalar Todo    (Instalar todos los entornos)"
-            "Volver           (Regresar al menú principal)"
+            "Neovim|"
+            "C/C++|"
+            "Go|"
+            "Python|"
+            "Node.js|"
+            "Instalar Todo|"
+            "Volver|"
         )
         local selected=0
         local key
@@ -351,15 +358,16 @@ show_devenv_menu() {
             tput rc
             
             for i in "${!options[@]}"; do
+                IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
-                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                    printf "\e[K  ${COLOR_ACCENT}┃${COLOR_BG_SEL} ${COLOR_SELECTED}%-26s ${COLOR_SIZE}%7s ${RESET}\n" "$name" "$size"
                 else
-                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                    printf "\e[K    ${COLOR_UNSELECTED}%-26s ${COLOR_MUTED}%7s ${RESET}\n" "$name" "$size"
                 fi
             done
 
             echo -e "\e[K"
-            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+            echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
 
             read -rsn1 key
 
@@ -401,8 +409,8 @@ show_devenv_menu() {
 show_multiplexers_menu() {
     while true; do
         local options=(
-            "Tmux             (Multiplexor de terminal)"
-            "Volver           (Regresar al menú principal)"
+            "Tmux|"
+            "Volver|"
         )
         local selected=0
         local key
@@ -419,15 +427,16 @@ show_multiplexers_menu() {
             tput rc
 
             for i in "${!options[@]}"; do
+                IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
-                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                    printf "\e[K  ${COLOR_ACCENT}┃${COLOR_BG_SEL} ${COLOR_SELECTED}%-26s ${COLOR_SIZE}%7s ${RESET}\n" "$name" "$size"
                 else
-                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                    printf "\e[K    ${COLOR_UNSELECTED}%-26s ${COLOR_MUTED}%7s ${RESET}\n" "$name" "$size"
                 fi
             done
 
             echo -e "\e[K"
-            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+            echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
 
             read -rsn1 key
 
@@ -464,14 +473,14 @@ show_multiplexers_menu() {
 show_proot_menu() {
     while true; do
         local options=(
-            "Instalar proot-distro    (Paquete base)"
-            "Instalar Debian          (Distribución Debian)"
-            "Instalar Alpine          (Distribución Alpine)"
-            "Login Debian             (Entrar al contenedor)"
-            "Login Alpine             (Entrar al contenedor)"
-            "Eliminar Debian          (Borrar contenedor)"
-            "Eliminar Alpine          (Borrar contenedor)"
-            "Volver                   (Regresar al menú principal)"
+            "Instalar proot-distro|"
+            "Instalar Debian|"
+            "Instalar Alpine|"
+            "Login Debian|"
+            "Login Alpine|"
+            "Eliminar Debian|"
+            "Eliminar Alpine|"
+            "Volver|"
         )
         local selected=0
         local key
@@ -488,15 +497,16 @@ show_proot_menu() {
             tput rc
 
             for i in "${!options[@]}"; do
+                IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
-                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                    printf "\e[K  ${COLOR_ACCENT}┃${COLOR_BG_SEL} ${COLOR_SELECTED}%-26s ${COLOR_SIZE}%7s ${RESET}\n" "$name" "$size"
                 else
-                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                    printf "\e[K    ${COLOR_UNSELECTED}%-26s ${COLOR_MUTED}%7s ${RESET}\n" "$name" "$size"
                 fi
             done
 
             echo -e "\e[K"
-            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+            echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
 
             read -rsn1 key
 
@@ -545,7 +555,7 @@ show_status() {
     local missing=0
     local GREEN='\033[1;32m'
     local RED='\033[1;31m'
-    local PINK='\033[1;38;5;211m'
+    local PINK='\033[1;38;5;51m'
     local NC='\033[0m'
     
     clear
@@ -749,14 +759,14 @@ show_logs() {
 show_uninstall_menu() {
     while true; do
         local options=(
-            "Apariencia        (zsh, p10k, plugins, lsd, bat)"
-            "Herramientas Base (git, wget, openssh, fzf, btop)"
-            "Entornos Dev      (neovim, clang, go, python, node)"
-            "Multiplexers      (tmux)"
-            "PRoot Distro      (Debian, Alpine)"
-            "Dotfiles Manager  (symlinks en $HOME)"
-            "Master Wipe       (eliminar TODO excepto git)"
-            "Volver            (Regresar al menú principal)"
+            "Apariencia|"
+            "Herramientas Base|"
+            "Entornos Dev|"
+            "Multiplexers|"
+            "PRoot Distro|"
+            "Dotfiles Manager|"
+            "Master Wipe|"
+            "Volver|"
         )
         local selected=0
         local key
@@ -773,15 +783,16 @@ show_uninstall_menu() {
             tput rc
             
             for i in "${!options[@]}"; do
+                IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
-                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                    printf "\e[K  ${COLOR_ACCENT}┃${COLOR_BG_SEL} ${COLOR_SELECTED}%-26s ${COLOR_SIZE}%7s ${RESET}\n" "$name" "$size"
                 else
-                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                    printf "\e[K    ${COLOR_UNSELECTED}%-26s ${COLOR_MUTED}%7s ${RESET}\n" "$name" "$size"
                 fi
             done
 
             echo -e "\e[K"
-            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+            echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
 
             read -rsn1 key
 
@@ -824,8 +835,8 @@ show_uninstall_menu() {
 show_uninstall_multiplexers() {
     while true; do
         local options=(
-            "Tmux             (Multiplexor de terminal)"
-            "Volver           (Regresar al menú)"
+            "Tmux|"
+            "Volver|"
         )
         local selected=0
         local key
@@ -842,15 +853,16 @@ show_uninstall_multiplexers() {
             tput rc
 
             for i in "${!options[@]}"; do
+                IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
-                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                    printf "\e[K  ${COLOR_ACCENT}┃${COLOR_BG_SEL} ${COLOR_SELECTED}%-26s ${COLOR_SIZE}%7s ${RESET}\n" "$name" "$size"
                 else
-                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                    printf "\e[K    ${COLOR_UNSELECTED}%-26s ${COLOR_MUTED}%7s ${RESET}\n" "$name" "$size"
                 fi
             done
 
             echo -e "\e[K"
-            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+            echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
 
             read -rsn1 key
 
@@ -887,10 +899,10 @@ show_uninstall_multiplexers() {
 show_uninstall_proot() {
     while true; do
         local options=(
-            "Debian          (Eliminar contenedor)"
-            "Alpine          (Eliminar contenedor)"
-            "Todo            (Eliminar contenedores y proot-distro)"
-            "Volver          (Regresar al menú)"
+            "Debian|"
+            "Alpine|"
+            "Todo|"
+            "Volver|"
         )
         local selected=0
         local key
@@ -907,15 +919,16 @@ show_uninstall_proot() {
             tput rc
 
             for i in "${!options[@]}"; do
+                IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
-                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                    printf "\e[K  ${COLOR_ACCENT}┃${COLOR_BG_SEL} ${COLOR_SELECTED}%-26s ${COLOR_SIZE}%7s ${RESET}\n" "$name" "$size"
                 else
-                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                    printf "\e[K    ${COLOR_UNSELECTED}%-26s ${COLOR_MUTED}%7s ${RESET}\n" "$name" "$size"
                 fi
             done
 
             echo -e "\e[K"
-            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+            echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
 
             read -rsn1 key
 
@@ -954,14 +967,14 @@ show_uninstall_proot() {
 show_uninstall_appearance() {
     while true; do
         local options=(
-            "ZSH Completo      (ZSH + OMZ + P10k + plugins + .zshrc)"
-            "Oh My Zsh        (Solo OMZ, ZSH se mantiene)"
-            "Powerlevel10k    (Solo el tema)"
-            "Plugins ZSH      (autosuggestions + syntax-highlighting)"
-            "LSD              (ls moderno)"
-            "Bat              (cat con syntax highlighting)"
-            "Desinstalar Todo (Toda la apariencia)"
-            "Volver           (Regresar al menú)"
+            "ZSH Completo|"
+            "Oh My Zsh|"
+            "Powerlevel10k|"
+            "Plugins ZSH|"
+            "LSD|"
+            "Bat|"
+            "Desinstalar Todo|"
+            "Volver|"
         )
         local selected=0
         local key
@@ -978,15 +991,16 @@ show_uninstall_appearance() {
             tput rc
             
             for i in "${!options[@]}"; do
+                IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
-                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                    printf "\e[K  ${COLOR_ACCENT}┃${COLOR_BG_SEL} ${COLOR_SELECTED}%-26s ${COLOR_SIZE}%7s ${RESET}\n" "$name" "$size"
                 else
-                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                    printf "\e[K    ${COLOR_UNSELECTED}%-26s ${COLOR_MUTED}%7s ${RESET}\n" "$name" "$size"
                 fi
             done
 
             echo -e "\e[K"
-            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+            echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
 
             read -rsn1 key
 
@@ -1029,12 +1043,12 @@ show_uninstall_appearance() {
 show_uninstall_basetools() {
     while true; do
         local options=(
-            "Wget              (Descargador de archivos)"
-            "OpenSSH           (Conexión remota segura)"
-            "FZF               (Buscador fuzzy interactivo)"
-            "Btop/Htop         (Monitor de recursos del sistema)"
-            "Desinstalar Todo  (Todas las herramientas base)"
-            "Volver            (Regresar al menú)"
+            "Wget|"
+            "OpenSSH|"
+            "FZF|"
+            "Btop/Htop|"
+            "Desinstalar Todo|"
+            "Volver|"
         )
         local selected=0
         local key
@@ -1051,15 +1065,16 @@ show_uninstall_basetools() {
             tput rc
             
             for i in "${!options[@]}"; do
+                IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
-                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                    printf "\e[K  ${COLOR_ACCENT}┃${COLOR_BG_SEL} ${COLOR_SELECTED}%-26s ${COLOR_SIZE}%7s ${RESET}\n" "$name" "$size"
                 else
-                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                    printf "\e[K    ${COLOR_UNSELECTED}%-26s ${COLOR_MUTED}%7s ${RESET}\n" "$name" "$size"
                 fi
             done
 
             echo -e "\e[K"
-            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+            echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
 
             read -rsn1 key
 
@@ -1100,13 +1115,13 @@ show_uninstall_basetools() {
 show_uninstall_devenv() {
     while true; do
         local options=(
-            "Neovim            (Editor vim moderno)"
-            "C/C++ (Clang)    (Compilador para C/C++)"
-            "Go               (Lenguaje de Google)"
-            "Python           (Lenguaje interpretado)"
-            "Node.js          (JS del lado del servidor)"
-            "Desinstalar Todo (Todos los entornos)"
-            "Volver           (Regresar al menú)"
+            "Neovim|"
+            "C/C++|"
+            "Go|"
+            "Python|"
+            "Node.js|"
+            "Desinstalar Todo|"
+            "Volver|"
         )
         local selected=0
         local key
@@ -1123,15 +1138,16 @@ show_uninstall_devenv() {
             tput rc
             
             for i in "${!options[@]}"; do
+                IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
-                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                    printf "\e[K  ${COLOR_ACCENT}┃${COLOR_BG_SEL} ${COLOR_SELECTED}%-26s ${COLOR_SIZE}%7s ${RESET}\n" "$name" "$size"
                 else
-                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                    printf "\e[K    ${COLOR_UNSELECTED}%-26s ${COLOR_MUTED}%7s ${RESET}\n" "$name" "$size"
                 fi
             done
 
             echo -e "\e[K"
-            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+            echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
 
             read -rsn1 key
 
