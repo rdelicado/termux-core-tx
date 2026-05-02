@@ -8,6 +8,10 @@ set -e
 
 PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 
+# Log file para instalaciones (evita /tmp con permisos restrictivos)
+LOG_DIR="$PROJECT_ROOT/logs"
+LOG_FILE="$LOG_DIR/aider_install.log"
+mkdir -p "$LOG_DIR" 2>/dev/null || true
 # Importar funciones comunes
 source "$PROJECT_ROOT/core/utils.sh"
 source "$PROJECT_ROOT/core/logger.sh"
@@ -127,7 +131,6 @@ install_aider_dependencies() {
         "requests"
         "rich"
         "pathspec"
-        "upgrade"
         "openai"
         "anthropic"
         "aiohttp"
@@ -197,7 +200,7 @@ install_aider() {
         --no-cache-dir \
         --prefer-binary \
         --upgrade \
-        aider-chat 2>&1 | tee /tmp/aider_install.log | grep -q "Successfully installed"; then
+        aider-chat 2>&1 | tee "$LOG_FILE" | grep -q "Successfully installed"; then
         echo -e "  ${CYAN}[███████████████████████████] 100%${NC}"
         print_success "✓ aider-chat instalado correctamente"
         return 0
@@ -212,7 +215,7 @@ install_aider() {
         --no-cache-dir \
         --no-build-isolation \
         --upgrade \
-        aider-chat 2>&1 | tee /tmp/aider_install.log | grep -q "Successfully installed"; then
+        aider-chat 2>&1 | tee "$LOG_FILE" | grep -q "Successfully installed"; then
         echo -e "  ${CYAN}[███████████████████████████] 100%${NC}"
         print_success "✓ aider-chat instalado correctamente"
         return 0
@@ -227,7 +230,7 @@ install_aider() {
     fi
     
     print_warning "⚠️  Instalación completada con limitaciones"
-    print_info "Logs: /tmp/aider_install.log"
+    print_info "Logs: $LOG_FILE"
     
     log_error "aider-chat installation completed with warnings"
     return 0
@@ -242,36 +245,26 @@ install_aider() {
 validate_aider_installation() {
     print_info "Validando instalación de Aider..."
     
-    # Verificar si el comando está disponible
-    if command -v aider &>/dev/null; then
-        local aider_version
-        aider_version=$(aider --version 2>&1) || {
-            print_warning "No se pudo obtener versión de Aider"
-            return 0  # Aún así, consideramos exitoso si el binario existe
-        }
-        print_success "Aider disponible: $aider_version"
-        log_info "Aider installation successful: $aider_version"
-        return 0
-    fi
-    
-    # Si no está en PATH, intentar importar como módulo Python
-    if $PYTHON_CMD -c "import aider; print('aider version ok')" 2>&1 | grep -q "ok"; then
+    # Primero intentar importar como módulo (no ejecutar el binario)
+    if $PYTHON_CMD -c "import aider" 2>/dev/null; then
         print_success "Aider instalado como módulo Python"
-        print_info "Usa: python3 -m aider"
+        print_info "Para ejecutarlo: python3 -m aider"
+        log_info "Aider module import OK"
         return 0
     fi
-    
-    # Como último recurso, verificar si hay algún ejecutable en Python site-packages
-    local python_bin_dir
-    python_bin_dir=$($PYTHON_CMD -c "import site; print(site.USER_SITE)" 2>/dev/null || echo "")
-    
-    if [[ -n "$python_bin_dir" && -f "$python_bin_dir/../bin/aider" ]]; then
-        print_success "Aider encontrado en: $python_bin_dir/../bin/aider"
+
+    # Si el módulo no se importa, comprobar si existe el ejecutable pero evitar ejecutarlo
+    if command -v aider &>/dev/null; then
+        local aider_path
+        aider_path=$(command -v aider 2>/dev/null || echo "")
+        print_warning "Se encontró el ejecutable de Aider en: $aider_path pero el módulo Python no se pudo importar"
+        print_info "No se ejecutará automáticamente para evitar fallos. Repara la instalación si lo deseas."
+        log_info "Aider executable present but module import failed"
         return 0
     fi
-    
+
     print_warning "Aider no se validó completamente, pero la instalación se intentó"
-    return 0  # No falla la instalación completa por esto
+    return 0
 }
 
 print_api_key_instructions() {
@@ -330,18 +323,16 @@ install_aider_main() {
         return 1
     fi
     
-    # Paso 3: Verificar si ya está instalado Y funciona
+    # Paso 3: Verificar si ya está instalado Y funciona (sin ejecutar el binario)
+    if $PYTHON_CMD -c "import aider" &>/dev/null; then
+        print_success "✓ Aider ya está instalado como módulo Python"
+        print_info "Instalación completada. Aider no será ejecutado automáticamente."
+        return 0
+    fi
+
     if command -v aider &>/dev/null; then
-        # Verificar que REALMENTE funciona
-        if aider --version &>/dev/null 2>&1; then
-            print_success "✓ Aider ya está instalado y funciona: $(aider --version 2>&1 | head -1)"
-            print_api_key_instructions
-            return 0
-        else
-            # Aider está "instalado" pero no funciona - hay dependencias faltantes
-            print_warning "Aider está parcialmente instalado pero le faltan dependencias"
-            print_info "Reparando instalación..."
-        fi
+        print_warning "Se encontró el ejecutable 'aider' pero el módulo Python no se puede importar"
+        print_info "Se intentará reparar la instalación sin ejecutar el binario"
     fi
     
     # Paso 4: Instalar Aider (sin preguntas, automático)
@@ -355,9 +346,9 @@ install_aider_main() {
         print_warning "No se pudo validar completamente"
     fi
     
-    # Paso 6: Mostrar instrucciones de configuración
-    print_api_key_instructions
-    
+    # Paso 6: Finalizar (no iniciar Aider automáticamente)
+    print_info "Instalación finalizada. No se iniciará Aider automáticamente."
+    print_info "Si quieres instrucciones de uso, consulta modules/04-ai-agents/README.md"
     print_success "✓ Proceso de instalación de Aider completado"
     return 0
 }
