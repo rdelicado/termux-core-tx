@@ -88,7 +88,7 @@ show_main_menu() {
             0) show_appearance_menu ;;
             1) show_basetools_menu ;;
             2) show_devenv_menu ;;
-            3) install_all ;;
+            3) execute_action "source \"\$PROJECT_ROOT/modules/01-appearance/install.sh\" && install_all_appearance && source \"\$PROJECT_ROOT/modules/02-base-tools/install.sh\" && install_all_basetools && source \"\$PROJECT_ROOT/modules/03-dev-env/install.sh\" && install_all_devenvs" "Instalación de TODO el sistema" ;;
             4) show_status ;;
             5) show_logs ;;
             6) clear; exit 0 ;;
@@ -179,6 +179,7 @@ show_basetools_menu() {
             "OpenSSH           (Conexión remota segura)"
             "FZF               (Buscador fuzzy interactivo)"
             "Btop/Htop         (Monitor de recursos del sistema)"
+            "Instalar Todo     (Todas las herramientas base)"
             "Volver            (Regresar al menú principal)"
         )
         local selected=0
@@ -237,7 +238,8 @@ show_basetools_menu() {
             2) execute_action "pkg install openssh -y" "OpenSSH" ;;
             3) execute_action "pkg install fzf -y" "FZF" ;;
             4) execute_action "pkg install btop -y || pkg install htop -y" "Btop/Htop" ;;
-            5) return ;;
+            5) execute_action "source \"\$PROJECT_ROOT/modules/02-base-tools/install.sh\" && install_all_basetools" "Instalación Masiva: Herramientas Base" ;;
+            6) return ;;
         esac
     done
 }
@@ -309,7 +311,7 @@ show_devenv_menu() {
             2) execute_action "source \$PROJECT_ROOT/modules/03-dev-env/install.sh && install_go" "Go" ;;
             3) execute_action "source \$PROJECT_ROOT/modules/03-dev-env/install.sh && install_python" "Python" ;;
             4) execute_action "source \$PROJECT_ROOT/modules/03-dev-env/install.sh && install_nodejs" "Node.js" ;;
-            5) execute_action "source \$PROJECT_ROOT/modules/03-dev-env/install.sh && install_neovim && install_c_cpp && install_go && install_python && install_nodejs" "Instalar Todos los Entornos" ;;
+            5) execute_action "source \"\$PROJECT_ROOT/modules/03-dev-env/install.sh\" && install_all_devenvs" "Instalación Masiva: Entornos Dev" ;;
             6) return ;;
         esac
     done

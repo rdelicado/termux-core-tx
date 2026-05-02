@@ -165,6 +165,17 @@ install_bat() {
     fi
 }
 
+install_all_appearance() {
+    print_info "Instalando toda la apariencia..."
+    install_zsh
+    install_oh_my_zsh
+    install_powerlevel10k
+    install_zsh_plugins
+    install_lsd
+    install_bat
+    print_success "Apariencia completa instalada"
+}
+
 run_appearance_module() {
     local choice
     show_appearance_menu

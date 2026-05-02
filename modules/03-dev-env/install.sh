@@ -200,6 +200,16 @@ install_rust() {
     fi
 }
 
+install_all_devenvs() {
+    print_info "Instalando todos los entornos de desarrollo..."
+    install_neovim
+    install_c_cpp
+    install_go
+    install_python
+    install_nodejs
+    print_success "Entornos de desarrollo instalados"
+}
+
 run_devenv_module() {
     local choice
     show_devenv_menu

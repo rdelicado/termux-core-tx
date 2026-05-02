@@ -147,6 +147,16 @@ install_btop() {
     command -v btop &>/dev/null && print_success "btop instalado" || print_error "Error"
 }
 
+install_all_basetools() {
+    print_info "Instalando todas las herramientas base..."
+    install_git
+    install_wget
+    install_openssh
+    install_fzf
+    install_btop
+    print_success "Herramientas base instaladas"
+}
+
 run_basetools_module() {
     local choice
     show_basetools_menu
