@@ -43,9 +43,9 @@ main() {
     if ! command -v tput &> /dev/null; then
         echo -e "\033[1;38;5;211m[INFO]\033[0m Instalando dependencias de interfaz (ncurses-utils)..."
         if [[ "$os" == "android" ]]; then
-            pkg install ncurses-utils -y > /dev/null 2>&1
+            pkg install ncurses-utils -y
         else
-            sudo apt-get install ncurses-bin -y > /dev/null 2>&1
+            sudo apt-get install ncurses-bin -y
         fi
     fi
     

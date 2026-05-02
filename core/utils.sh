@@ -51,30 +51,32 @@ install_package() {
     pm=$(get_package_manager)
     local retry=0
     local max_retries=1
-    local install_output=""
     
     while [[ $retry -le $max_retries ]]; do
         case "$pm" in
             pkg)
                 if [[ $retry -eq 1 ]]; then
                     print_info "Actualizando repositorios..."
-                    pkg update -y > /dev/null 2>&1
+                    pkg update -y
                 fi
-                install_output=$(pkg install -y "$pkg" 2>&1)
+                print_info "Instalando $pkg..."
+                pkg install -y "$pkg"
                 ;;
             apt)
                 if [[ $retry -eq 1 ]]; then
                     print_info "Actualizando repositorios..."
-                    sudo apt-get update -y > /dev/null 2>&1
+                    sudo apt-get update -y
                 fi
-                install_output=$(sudo apt-get install -y "$pkg" 2>&1)
+                print_info "Instalando $pkg..."
+                sudo apt-get install -y "$pkg"
                 ;;
             brew)
                 if [[ $retry -eq 1 ]]; then
                     print_info "Actualizando..."
-                    brew update > /dev/null 2>&1
+                    brew update
                 fi
-                install_output=$(brew install "$pkg" 2>&1)
+                print_info "Instalando $pkg..."
+                brew install "$pkg"
                 ;;
             *)
                 print_error "Gestor de paquetes desconocido"
@@ -97,9 +99,9 @@ install_package() {
         log_warning "btop not found, falling back to htop"
         
         case "$pm" in
-            pkg) pkg install -y htop > /dev/null 2>&1 ;;
-            apt) sudo apt-get install -y htop > /dev/null 2>&1 ;;
-            brew) brew install htop > /dev/null 2>&1 ;;
+            pkg) pkg install -y htop ;;
+            apt) sudo apt-get install -y htop ;;
+            brew) brew install htop ;;
         esac
         
         if [[ $? -eq 0 ]]; then
