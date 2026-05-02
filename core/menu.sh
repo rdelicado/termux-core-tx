@@ -1,290 +1,363 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-source "$PROJECT_ROOT/core/logger.sh"
-source "$PROJECT_ROOT/modules/01-appearance/install.sh"
-source "$PROJECT_ROOT/modules/02-base-tools/install.sh"
-source "$PROJECT_ROOT/modules/03-dev-env/install.sh"
+COLOR_TITLE='\033[1;38;5;211m'
+COLOR_SELECTED='\033[1;38;5;225m'
+COLOR_UNSELECTED='\033[38;5;250m'
+COLOR_MUTED='\033[38;5;240m'
+RESET='\033[0m'
 
-is_installed() {
-    local tool="$1"
-    command -v "$tool" &>/dev/null && return 0 || return 1
+execute_action() {
+    local command="$1"
+    local action_name="$2"
+    
+    tput cnorm
+    clear
+    banner
+    echo -e "\n  ${COLOR_TITLE}[ ⚡ EJECUTANDO: $action_name ]${RESET}\n"
+    
+    eval "$command"
+    
+    echo -e "\n  ${COLOR_MUTED}Presiona ENTER para volver al menú...${RESET}"
+    read -r
+    
+    tput civis
 }
 
-get_tool_status() {
-    local tool="$1"
-    if is_installed "$tool"; then
-        echo "INSTALADO"
-    else
-        echo "FALTA"
-    fi
-}
+show_main_menu() {
+    while true; do
+        local options=(
+            "Apariencia        (zsh, p10k, plugins, lsd, bat)"
+            "Herramientas Base (git, fzf, zoxide, lazygit, btop)"
+            "Entornos Dev      (Neovim, C/C++, Go, Python, Node)"
+            "Instalar Todo     (todo lo que falte)"
+            "Ver Estado        (herramientas instaladas)"
+            "Ver Logs"
+            "Salir"
+        )
+        local selected=0
+        local key
 
-print_tool_option() {
-    local num="$1"
-    local name="$2"
-    local desc="$3"
-    local status="$4"
-    
-    local color="${GREEN}"
-    local status_color="${GREEN}"
-    
-    [[ "$status" == "FALTA" ]] && status_color="${YELLOW}"
-    [[ "$status" == "INSTALADO" ]] && status_color="${GREEN}"
-    
-    echo -e "${GREEN}$num)${NC} ${BOLD}$name${NC} ${status_color}[$status]${NC}"
-    echo -e "   ${CYAN}$desc${NC}"
+        tput civis
+        trap "tput cnorm; exit" INT TERM
+
+        clear
+        banner
+        echo -e "  ${COLOR_TITLE}Actions${RESET}\n"
+        tput sc
+
+        while true; do
+            tput rc
+            
+            for i in "${!options[@]}"; do
+                if [[ $i -eq $selected ]]; then
+                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                else
+                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                fi
+            done
+
+            echo -e "\e[K"
+            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+
+            read -rsn1 key
+
+            case "$key" in
+                $'\e')
+                    read -rsn2 key
+                    case "$key" in
+                        '[A') ((selected--));;
+                        '[B') ((selected++));;
+                    esac
+                    ;;
+                'k') ((selected--));;
+                'j') ((selected++));;
+                'q') tput cnorm; clear; exit 0 ;;
+                "") break ;;
+            esac
+
+            if [[ $selected -lt 0 ]]; then
+                selected=$((${#options[@]} - 1))
+            elif [[ $selected -ge ${#options[@]} ]]; then
+                selected=0
+            fi
+        done
+
+        tput cnorm
+
+        case $selected in
+            0) show_appearance_menu ;;
+            1) show_basetools_menu ;;
+            2) show_devenv_menu ;;
+            3) install_all ;;
+            4) show_status ;;
+            5) show_logs ;;
+            6) clear; exit 0 ;;
+        esac
+    done
 }
 
 show_appearance_menu() {
     while true; do
+        local options=(
+            "ZSH + Oh My Zsh    (Motor de terminal avanzado)"
+            "Powerlevel10k     (Tema con icons y segmentos)"
+            "Autosuggestions   (Sugiere comandos del historial)"
+            "Syntax Highlight  (Colorea comandos en tiempo real)"
+            "LSD               (ls moderno con iconos)"
+            "Bat               (cat con syntax highlighting)"
+            "Instalar Todo     (Instalar toda la apariencia)"
+            "Volver            (Regresar al menú principal)"
+        )
+        local selected=0
+        local key
+
+        tput civis
+        trap "tput cnorm; exit" INT TERM
+
+        clear
         banner
-        echo ""
-        echo -e "${CYAN}═══════════════════════════════════════════${NC}"
-        echo -e "${BOLD}       ▸ APARIENCIA ◂${NC}"
-        echo -e "${CYAN}═══════════════════════════════════════════${NC}"
-        
-        print_tool_option "1" "ZSH" "Shell avanzada y personalizable" "$(get_tool_status zsh)"
-        print_tool_option "2" "Powerlevel10k" "Tema ultra-rápido con iconos" "$(get_tool_status p10k)"
-        print_tool_option "3" "Autosuggestions" "Sugiere comandos de tu historial" "$(get_tool_status zsh)"
-        print_tool_option "4" "Syntax Highlighting" "Colorea comandos en tiempo real" "$(get_tool_status zsh)"
-        print_tool_option "5" "LSD" "El 'ls' con esteroides e iconos" "$(get_tool_status lsd)"
-        print_tool_option "6" "Bat" "El 'cat' con sintaxis y números" "$(get_tool_status bat)"
-        
-        echo ""
-        echo -e "${GREEN}A)${NC} Instalar todas"
-        echo -e "${GREEN}B)${NC} Volver al menú principal"
-        
-        echo -ne "\n${YELLOW}▸ Selecciona:${NC} "
-        read -r choice
-        
-        case "$choice" in
-            1) install_zsh 2>/dev/null; install_oh_my_zsh 2>/dev/null ;;
-            2) install_powerlevel10k 2>/dev/null ;;
-            3) install_zsh_plugins 2>/dev/null ;;
-            4) install_zsh_plugins 2>/dev/null ;;
-            5) install_lsd 2>/dev/null ;;
-            6) install_bat 2>/dev/null ;;
-            A|a) 
-                print_info "Instalando apariencia..."
-                install_zsh 2>/dev/null; install_oh_my_zsh 2>/dev/null
-                install_powerlevel10k 2>/dev/null
-                install_zsh_plugins 2>/dev/null
-                install_lsd 2>/dev/null; install_bat 2>/dev/null
-                print_success "Apariencia completada"
-                read -p "Presiona Enter para continuar..."
-                ;;
-            B|b) return ;;
-            *) print_error "Opción inválida" ;;
+        echo -e "  ${COLOR_TITLE}Apariencia${RESET}\n"
+        tput sc
+
+        while true; do
+            tput rc
+            
+            for i in "${!options[@]}"; do
+                if [[ $i -eq $selected ]]; then
+                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                else
+                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                fi
+            done
+
+            echo -e "\e[K"
+            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+
+            read -rsn1 key
+
+            case "$key" in
+                $'\e')
+                    read -rsn2 key
+                    case "$key" in
+                        '[A') ((selected--));;
+                        '[B') ((selected++));;
+                    esac
+                    ;;
+                'k') ((selected--));;
+                'j') ((selected++));;
+                'q') tput cnorm; return ;;
+                "") break ;;
+            esac
+
+            if [[ $selected -lt 0 ]]; then
+                selected=$((${#options[@]} - 1))
+            elif [[ $selected -ge ${#options[@]} ]]; then
+                selected=0
+            fi
+        done
+
+        tput cnorm
+
+        case $selected in
+            0) execute_action "bash modules/01-appearance/zsh.sh" "ZSH + Oh My Zsh" ;;
+            1) execute_action "bash modules/01-appearance/install.sh" "Powerlevel10k" ;;
+            2) execute_action "bash modules/01-appearance/install.sh" "Plugins ZSH" ;;
+            3) execute_action "bash modules/01-appearance/install.sh" "Plugins ZSH" ;;
+            4) execute_action "pkg install lsd -y" "LSD" ;;
+            5) execute_action "pkg install bat -y" "Bat" ;;
+            6) execute_action "bash modules/01-appearance/install.sh" "Instalación Completa Apariencia" ;;
+            7) return ;;
         esac
     done
 }
 
 show_basetools_menu() {
     while true; do
+        local options=(
+            "Git               (Control de versiones)"
+            "Wget              (Descargador de archivos)"
+            "OpenSSH           (Conexión remota segura)"
+            "FZF               (Buscador fuzzy interactivo)"
+            "Btop/Htop         (Monitor de recursos del sistema)"
+            "Volver            (Regresar al menú principal)"
+        )
+        local selected=0
+        local key
+
+        tput civis
+        trap "tput cnorm; exit" INT TERM
+
+        clear
         banner
-        echo ""
-        echo -e "${CYAN}═══════════════════════════════════════════${NC}"
-        echo -e "${BOLD}       ▸ HERRAMIENTAS BASE ◂${NC}"
-        echo -e "${CYAN}═══════════════════════════════════════════${NC}"
-        
-        print_tool_option "1" "Git" "Control de versiones" "$(get_tool_status git)"
-        print_tool_option "2" "Wget" "Descargador de archivos" "$(get_tool_status wget)"
-        print_tool_option "3" "OpenSSH" "Conexión remota segura" "$(get_tool_status ssh)"
-        print_tool_option "4" "FZF" "Buscador difuso fuzzy" "$(get_tool_status fzf)"
-        print_tool_option "5" "Zoxide" "CD inteligente que aprende" "$(get_tool_status zoxide)"
-        print_tool_option "6" "Lazygit" "UI de git en terminal" "$(get_tool_status lazygit)"
-        print_tool_option "7" "Btop" "Monitor de recursos" "$(get_tool_status btop)"
-        
-        echo ""
-        echo -e "${GREEN}A)${NC} Instalar todas"
-        echo -e "${GREEN}B)${NC} Volver al menú principal"
-        
-        echo -ne "\n${YELLOW}▸ Selecciona:${NC} "
-        read -r choice
-        
-        case "$choice" in
-            1) install_git 2>/dev/null ;;
-            2) install_wget 2>/dev/null ;;
-            3) install_openssh 2>/dev/null ;;
-            4) install_fzf 2>/dev/null ;;
-            5) install_zoxide 2>/dev/null ;;
-            6) install_lazygit 2>/dev/null ;;
-            7) install_btop 2>/dev/null ;;
-            A|a) 
-                print_info "Instalando herramientas base..."
-                install_git 2>/dev/null; install_wget 2>/dev/null; install_openssh 2>/dev/null
-                install_fzf 2>/dev/null; install_zoxide 2>/dev/null
-                install_lazygit 2>/dev/null; install_btop 2>/dev/null
-                print_success "Herramientas base completadas"
-                read -p "Presiona Enter para continuar..."
-                ;;
-            B|b) return ;;
-            *) print_error "Opción inválida" ;;
+        echo -e "  ${COLOR_TITLE}Herramientas Base${RESET}\n"
+        tput sc
+
+        while true; do
+            tput rc
+            
+            for i in "${!options[@]}"; do
+                if [[ $i -eq $selected ]]; then
+                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                else
+                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                fi
+            done
+
+            echo -e "\e[K"
+            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+
+            read -rsn1 key
+
+            case "$key" in
+                $'\e')
+                    read -rsn2 key
+                    case "$key" in
+                        '[A') ((selected--));;
+                        '[B') ((selected++));;
+                    esac
+                    ;;
+                'k') ((selected--));;
+                'j') ((selected++));;
+                'q') tput cnorm; return ;;
+                "") break ;;
+            esac
+
+            if [[ $selected -lt 0 ]]; then
+                selected=$((${#options[@]} - 1))
+            elif [[ $selected -ge ${#options[@]} ]]; then
+                selected=0
+            fi
+        done
+
+        tput cnorm
+
+        case $selected in
+            0) execute_action "pkg install git -y" "Git" ;;
+            1) execute_action "pkg install wget -y" "Wget" ;;
+            2) execute_action "pkg install openssh -y" "OpenSSH" ;;
+            3) execute_action "pkg install fzf -y" "FZF" ;;
+            4) execute_action "pkg install btop -y || pkg install htop -y" "Btop/Htop" ;;
+            5) return ;;
         esac
     done
 }
 
 show_devenv_menu() {
     while true; do
+        local options=(
+            "Neovim            (Editor vim moderno)"
+            "C/C++ (Clang)    (Compilador para C/C++)"
+            "Go               (Lenguaje de Google)"
+            "Python           (Lenguaje interpretado)"
+            "Node.js          (JS del lado del servidor)"
+            "Instalar Todo    (Instalar todos los entornos)"
+            "Volver           (Regresar al menú principal)"
+        )
+        local selected=0
+        local key
+
+        tput civis
+        trap "tput cnorm; exit" INT TERM
+
+        clear
         banner
-        echo ""
-        echo -e "${CYAN}═══════════════════════════════════════════${NC}"
-        echo -e "${BOLD}       ▸ ENTORNOS DE DESARROLLO ◂${NC}"
-        echo -e "${CYAN}═══════════════════════════════════════════${NC}"
-        
-        print_tool_option "1" "Neovim" "Editor vim moderno" "$(get_tool_status nvim)"
-        print_tool_option "2" "C/C++ (Clang)" "Compilador para C/C++" "$(get_tool_status clang)"
-        print_tool_option "3" "Go" "Lenguaje de Google" "$(get_tool_status go)"
-        print_tool_option "4" "Python" "Lenguaje interpretado" "$(get_tool_status python3)"
-        print_tool_option "5" "Node.js" "JS del lado del servidor" "$(get_tool_status node)"
-        
-        echo ""
-        echo -e "${GREEN}A)${NC} Instalar todas"
-        echo -e "${GREEN}B)${NC} Volver al menú principal"
-        
-        echo -ne "\n${YELLOW}▸ Selecciona:${NC} "
-        read -r choice
-        
-        case "$choice" in
-            1) install_neovim 2>/dev/null ;;
-            2) install_c_cpp 2>/dev/null ;;
-            3) install_go 2>/dev/null ;;
-            4) install_python 2>/dev/null ;;
-            5) install_nodejs 2>/dev/null ;;
-            A|a) 
-                print_info "Instalando entornos..."
-                install_neovim 2>/dev/null; install_c_cpp 2>/dev/null
-                install_go 2>/dev/null; install_python 2>/dev/null
-                install_nodejs 2>/dev/null
-                print_success "Entornos de desarrollo completados"
-                read -p "Presiona Enter para continuar..."
-                ;;
-            B|b) return ;;
-            *) print_error "Opción inválida" ;;
+        echo -e "  ${COLOR_TITLE}Entornos de Desarrollo${RESET}\n"
+        tput sc
+
+        while true; do
+            tput rc
+            
+            for i in "${!options[@]}"; do
+                if [[ $i -eq $selected ]]; then
+                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
+                else
+                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
+                fi
+            done
+
+            echo -e "\e[K"
+            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
+
+            read -rsn1 key
+
+            case "$key" in
+                $'\e')
+                    read -rsn2 key
+                    case "$key" in
+                        '[A') ((selected--));;
+                        '[B') ((selected++));;
+                    esac
+                    ;;
+                'k') ((selected--));;
+                'j') ((selected++));;
+                'q') tput cnorm; return ;;
+                "") break ;;
+            esac
+
+            if [[ $selected -lt 0 ]]; then
+                selected=$((${#options[@]} - 1))
+            elif [[ $selected -ge ${#options[@]} ]]; then
+                selected=0
+            fi
+        done
+
+        tput cnorm
+
+        case $selected in
+            0) execute_action "source \$PROJECT_ROOT/modules/03-dev-env/install.sh && install_neovim" "Neovim" ;;
+            1) execute_action "source \$PROJECT_ROOT/modules/03-dev-env/install.sh && install_c_cpp" "C/C++ (Clang)" ;;
+            2) execute_action "source \$PROJECT_ROOT/modules/03-dev-env/install.sh && install_go" "Go" ;;
+            3) execute_action "source \$PROJECT_ROOT/modules/03-dev-env/install.sh && install_python" "Python" ;;
+            4) execute_action "source \$PROJECT_ROOT/modules/03-dev-env/install.sh && install_nodejs" "Node.js" ;;
+            5) execute_action "source \$PROJECT_ROOT/modules/03-dev-env/install.sh && install_neovim && install_c_cpp && install_go && install_python && install_nodejs" "Instalar Todos los Entornos" ;;
+            6) return ;;
         esac
     done
 }
 
-show_main_menu() {
-    banner
-    echo ""
-    echo ""
-    echo -e "${GREEN}1)${NC} Apariencia       (zsh, p10k, plugins, lsd, bat)"
-    echo -e "${GREEN}2)${NC} Herramientas Base (git, fzf, zoxide, lazygit, btop)"
-    echo -e "${GREEN}3)${NC} Entornos Dev     (Neovim, C/C++, Go, Python, Node)"
-    echo -e "${GREEN}4)${NC} Instalar Todo    (todo lo que falte)"
-    echo -e "${GREEN}5)${NC} Ver Estado       (herramientas instaladas)"
-    echo -e "${GREEN}6)${NC} Ver Logs"
-    echo -e "${GREEN}0)${NC} Salir"
-    echo ""
-    echo -ne "${YELLOW}▸ Selecciona:${NC} "
-}
-
-handle_main_menu() {
-    local choice
-    read -r choice
-    
-    case "$choice" in
-        1) show_appearance_menu ;;
-        2) show_basetools_menu ;;
-        3) show_devenv_menu ;;
-        4) install_all ;;
-        5) show_status; read -p "Presiona Enter para continuar..." ;;
-        6) show_logs; read -p "Presiona Enter para continuar..." ;;
-        0) 
-            log_info "Sesión finalizada"
-            print_info "¡Hasta luego!"
-            exit 0
-            ;;
-        *) 
-            print_error "Opción inválida"
-            ;;
-    esac
+is_installed() {
+    command -v "$1" &>/dev/null && return 0 || return 1
 }
 
 show_status() {
-    clear
-    print_header "Estado de Herramientas"
-    
     local tools=("zsh" "git" "fzf" "nvim" "go" "btop" "bat" "lsd" "clang" "python3" "node")
     local installed=0
     local missing=0
     
+    clear
+    banner
+    echo -e "  ${COLOR_TITLE}Estado de Herramientas${RESET}\n"
+    
     for tool in "${tools[@]}"; do
         if is_installed "$tool"; then
-            echo -e "  ${GREEN}✔${NC} $tool ${GREEN}[INSTALADO]${NC}"
+            echo -e "    ${COLOR_SELECTED}✔${RESET} ${tool} ${COLOR_UNSELECTED}[INSTALADO]${RESET}"
             ((installed++))
         else
-            echo -e "  ${YELLOW}✖${NC} $tool ${YELLOW}[FALTA]${NC}"
+            echo -e "    ${COLOR_MUTED}✖${RESET} ${tool} ${COLOR_MUTED}[FALTA]${RESET}"
             ((missing++))
         fi
     done
     
-    echo ""
-    print_info "Instaladas: $installed | Faltantes: $missing"
+    echo -e "\n  ${COLOR_SELECTED}Instaladas: $installed${RESET}  ${COLOR_MUTED}|${RESET}  ${COLOR_TITLE}Faltantes: $missing${RESET}"
+    echo -e "\n  ${COLOR_MUTED}Presiona cualquier tecla para volver...${RESET}"
+    read -rsn1
 }
 
 show_logs() {
-    clear
-    print_header "Logs Recientes"
     local log_dir="$PROJECT_ROOT/logs"
+    
+    clear
+    banner
+    echo -e "  ${COLOR_TITLE}Logs Recientes${RESET}\n"
     
     if [[ -d "$log_dir" ]] && [[ -n "$(ls -A "$log_dir" 2>/dev/null)" ]]; then
         ls -1t "$log_dir" | head -5 | while read -r log; do
-            echo -e "  ${CYAN}📄${NC} $log"
+            echo -e "    ${COLOR_UNSELECTED}📄 $log${RESET}"
         done
-        echo ""
-        read -p "Ver log más reciente? [s/N]: " resp
-        if [[ "$resp" == "s" || "$resp" == "S" ]]; then
-            local latest=$(ls -1t "$log_dir" | head -1)
-            cat "$log_dir/$latest"
-        fi
     else
-        print_warning "No hay logs disponibles"
+        echo -e "    ${COLOR_MUTED}No hay logs disponibles${RESET}"
     fi
-}
-
-log_install_result() {
-    local tool="$1"
-    local status="$2"
-    local path="${3:-N/A}"
     
-    ((LOG_TOTAL++))
-    
-    if [[ "$status" == "success" ]]; then
-        ((LOG_SUCCESS++))
-        log_install "$tool" "success" "$path"
-    else
-        ((LOG_FAILED++))
-        log_install "$tool" "failed" "$path"
-    fi
-}
-
-install_all() {
-    LOG_TOTAL=0
-    LOG_SUCCESS=0
-    LOG_FAILED=0
-    
-    print_header "Instalando Todo..."
-    log_info "Iniciando instalación completa..."
-    
-    print_info "Módulo Apariencia..."
-    install_zsh 2>/dev/null; install_oh_my_zsh 2>/dev/null
-    install_powerlevel10k 2>/dev/null
-    install_zsh_plugins 2>/dev/null
-    install_lsd 2>/dev/null; install_bat 2>/dev/null
-    
-    print_info "Módulo Herramientas Base..."
-    install_git 2>/dev/null; install_wget 2>/dev/null; install_openssh 2>/dev/null
-    install_fzf 2>/dev/null; install_zoxide 2>/dev/null
-    install_lazygit 2>/dev/null; install_btop 2>/dev/null
-    
-    print_info "Módulo Entornos Dev..."
-    install_neovim 2>/dev/null; install_c_cpp 2>/dev/null
-    install_go 2>/dev/null; install_python 2>/dev/null
-    install_nodejs 2>/dev/null
-    
-    log_summary "$LOG_TOTAL" "$LOG_SUCCESS" "$LOG_FAILED"
-    print_success "Instalación completa!"
-    read -p "Presiona Enter para continuar..."
+    echo -e "\n  ${COLOR_MUTED}Presiona cualquier tecla para volver...${RESET}"
+    read -rsn1
 }

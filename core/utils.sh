@@ -22,7 +22,6 @@ print_info()    { echo -e "${CYAN}[INFO]${NC} $1"; }
 print_header()  { echo -e "\n${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}\n${BOLD}$1${NC}\n${GRAY}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"; }
 
 banner() {
-    clear
     local c1='\033[38;5;51m'   # Cyan claro
     local c2='\033[38;5;45m'
     local c3='\033[38;5;39m'   # Cyan medio
@@ -32,18 +31,17 @@ banner() {
     local dim='\033[2m'        # Texto tenue
     local reset='\033[0m'
 
-    # Logo CORE-TX en formato Slant exacto
-    echo -e "${c1}   ______  ____  ____  ______   ${m1} _______  __ ${reset}"
-    echo -e "${c2}  / ____/ / __ \\/ __ \\/ ____/  ${m1} /_  __/ |/ / ${reset}"
-    echo -e "${c3} / /     / / / / /_/ / __/  ${dim}______${m1}/ /  |   /  ${reset}"
-    echo -e "${c4}/ /___  / /_/ / _, _/ /___ ${dim}/_____/${m1}/ /  /   |   ${reset}"
+    # Logo CORE TX perfectamente alineado y simétrico
+    echo -e "${c1}   ______  ____  ____  ______     ${m1} _______  __ ${reset}"
+    echo -e "${c2}  / ____/ / __ \\/ __ \\/ ____/    ${m1} /_  __/ |/ / ${reset}"
+    echo -e "${c3} / /     / / / / /_/ / __/       ${m1}  / /  |   /  ${reset}"
+    echo -e "${c4}/ /___  / /_/ / _, _/ /___       ${m1} / /  /   |   ${reset}"
     echo -e "${c5}\\____/  \\____/_/ |_/_____/       ${m1}/_/  /_/|_|   ${reset}"
-    echo -e "${dim}───────────────────────────────────────────────${reset}"
+    echo ""
     
-    # Info Bar Dinámica
+    # Info Bar simplificada (Sin líneas divisorias)
     local current_os=$(uname -o 2>/dev/null || uname -s)
-    echo -e "  ${c1}OS:${reset} ${current_os}  ${dim}│${reset}  ${c3}USER:${reset} $USER  ${dim}│${reset}  ${m1}MODE:${reset} Interactive"
-    echo -e "${dim}───────────────────────────────────────────────${reset}"
+    echo -e "       ${c1}OS:${reset} ${current_os}   ${dim}│${reset}   ${c3}USER:${reset} $USER"
     echo ""
 }
 

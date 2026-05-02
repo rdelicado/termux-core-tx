@@ -40,10 +40,7 @@ main() {
         fi
     fi
     
-    while true; do
-        show_main_menu
-        handle_main_menu
-    done
+    show_main_menu
 }
 
 main "$@"
