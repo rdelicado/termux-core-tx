@@ -34,38 +34,30 @@ banner() {
     local reset='\033[0m'
 
     if [[ $cols -lt 42 ]]; then
-        local pad=$(( (cols - 12) / 2 ))
-        printf '%*s%bCORE %bTX%b\n' "$pad" '' "$c1" "$m1" "$reset"
-        pad=$(( (cols - 16) / 2 ))
-        printf '%*s%bTermux Toolkit%b\n' "$pad" '' "$c3" "$reset"
+        printf '%bCORE %bTX%b\n' "$c1" "$m1" "$reset"
+        printf '%bTermux Toolkit%b\n' "$c3" "$reset"
         printf '\n'
         return
     fi
 
     if [[ $cols -lt 56 ]]; then
-        local pad=$(( (cols - 20) / 2 ))
-        printf '%*s%b  ______  ____  ___ %b _______  __%b\n' "$pad" '' "$c1" "$m1" "$reset"
-        printf '%*s%b / ____/ / __ \\/ _ \\%b/_  __/ |/ /%b\n' "$pad" '' "$c2" "$m1" "$reset"
-        printf '%*s%b/ /     / /_/ / // /%b / /  |   / %b\n' "$pad" '' "$c3" "$m1" "$reset"
-        printf '%*s%b\\____/  \\____/\\___/%b /_/  /_/|_| %b\n' "$pad" '' "$c5" "$m1" "$reset"
+        printf '%b  ______  ____  ___ %b _______  __%b\n' "$c1" "$m1" "$reset"
+        printf '%b / ____/ / __ \\/ _ \\%b/_  __/ |/ /%b\n' "$c2" "$m1" "$reset"
+        printf '%b/ /     / /_/ / // /%b / /  |   / %b\n' "$c3" "$m1" "$reset"
+        printf '%b\\____/  \\____/\\___/%b /_/  /_/|_| %b\n' "$c5" "$m1" "$reset"
         printf '\n'
-        pad=$(( (cols - 28) / 2 ))
-        printf '%*s%bTermux Toolkit%b\n' "$pad" '' "$c3" "$reset"
+        printf '%bTermux Toolkit%b\n' "$c3" "$reset"
         printf '\n'
         return
     fi
 
-    local pad=$(( (cols - 48) / 2 ))
-    local sp
-    sp=$(printf '%*s' "$pad" '')
-
-    printf '%b\n' "${sp}${c1}   ______  ____  ____  ______     ${m1} _______  __ ${reset}"
-    printf '%b\n' "${sp}${c2}  / ____/ / __ \\/ __ \\/ ____/    ${m1} /_  __/ |/ / ${reset}"
-    printf '%b\n' "${sp}${c3} / /     / / / / /_/ / __/       ${m1}  / /  |   /  ${reset}"
-    printf '%b\n' "${sp}${c4}/ /___  / /_/ / _, _/ /___       ${m1} / /  /   |   ${reset}"
-    printf '%b\n' "${sp}${c5}\\____/  \\____/_/ |_/_____/       ${m1}/_/  /_/|_|   ${reset}"
+    printf '%b\n' "${c1}   ______  ____  ____  ______     ${m1} _______  __ ${reset}"
+    printf '%b\n' "${c2}  / ____/ / __ \\/ __ \\/ ____/    ${m1} /_  __/ |/ / ${reset}"
+    printf '%b\n' "${c3} / /     / / / / /_/ / __/       ${m1}  / /  |   /  ${reset}"
+    printf '%b\n' "${c4}/ /___  / /_/ / _, _/ /___       ${m1} / /  /   |   ${reset}"
+    printf '%b\n' "${c5}\\____/  \\____/_/ |_/_____/       ${m1}/_/  /_/|_|   ${reset}"
     printf '\n'
-    printf '%b\n' "${sp}${c1}Termux Toolkit${dim} │ Environment Manager${reset}"
+    printf '%b\n' "${c1}Termux Toolkit${dim} │ Environment Manager${reset}"
     printf '\n'
 }
 
