@@ -44,15 +44,53 @@ show_main_menu() {
         )
         local selected=0
         local key
+        local term_rows
+        local visible_rows
+        local window_start=0
+        local window_end=0
+        local header_rows=8
+        local footer_rows=2
+
+        term_rows=$(tput lines)
+        visible_rows=$((term_rows - header_rows - footer_rows))
+        if [[ $visible_rows -lt 3 ]]; then
+            visible_rows=3
+        fi
 
         tput civis
         trap "tput cnorm; exit" INT TERM
 
         while true; do
+            if [[ $selected -lt 0 ]]; then
+                selected=$((${#options[@]} - 1))
+            elif [[ $selected -ge ${#options[@]} ]]; then
+                selected=0
+            fi
+
+            if [[ $selected -lt $window_start ]]; then
+                window_start=$selected
+            elif [[ $selected -ge $((window_start + visible_rows)) ]]; then
+                window_start=$((selected - visible_rows + 1))
+            fi
+
+            if [[ $window_start -lt 0 ]]; then
+                window_start=0
+            fi
+
+            window_end=$((window_start + visible_rows - 1))
+            if [[ $window_end -ge ${#options[@]} ]]; then
+                window_end=$((${#options[@]} - 1))
+                window_start=$((window_end - visible_rows + 1))
+                if [[ $window_start -lt 0 ]]; then
+                    window_start=0
+                fi
+            fi
+
             tput cup 0 0
+            tput ed
             banner
             echo -e "  ${COLOR_TITLE}Actions${RESET}\n"
-            for i in "${!options[@]}"; do
+            for ((i=window_start; i<=window_end; i++)); do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
                     printf "\e[K  ${COLOR_ACCENT}┃${COLOR_BG_SEL} ${COLOR_SELECTED}%-26s ${COLOR_SIZE}%7s ${RESET}\n" "$name" "$size"
@@ -61,9 +99,12 @@ show_main_menu() {
                 fi
             done
 
+            if [[ ${#options[@]} -gt visible_rows ]]; then
+                echo -e "\e[K  ${COLOR_MUTED}  ▸ mostrando $((window_start + 1))-$((window_end + 1)) de ${#options[@]}${RESET}"
+            fi
+
             echo -e "\e[K"
             echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
-            tput ed
 
             read -rsn1 key
 
@@ -80,12 +121,6 @@ show_main_menu() {
                 'q') tput cnorm; clear; exit 0 ;;
                 "") break ;;
             esac
-
-            if [[ $selected -lt 0 ]]; then
-                selected=$((${#options[@]} - 1))
-            elif [[ $selected -ge ${#options[@]} ]]; then
-                selected=0
-            fi
         done
 
         tput cnorm
