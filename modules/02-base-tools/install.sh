@@ -30,6 +30,7 @@ install_git() {
         print_success "git configurado"
     else
         print_error "Error al instalar git"
+        return 1
     fi
 }
 
@@ -41,7 +42,7 @@ install_wget() {
     fi
     
     install_package "wget"
-    command -v wget &>/dev/null && print_success "wget instalado" || print_error "Error"
+    command -v wget &>/dev/null && print_success "wget instalado" || { print_error "Error instalando wget"; return 1; }
 }
 
 install_openssh() {
@@ -58,6 +59,7 @@ install_openssh() {
         print_info "Para usar ssh: genera keys con ssh-keygen"
     else
         print_error "Error al instalar openssh"
+        return 1
     fi
 }
 
@@ -84,6 +86,7 @@ install_fzf() {
         fi
     else
         print_error "Error al instalar fzf"
+        return 1
     fi
 }
 
@@ -155,7 +158,7 @@ install_lazygit() {
     fi
     
     install_package "lazygit"
-    command -v lazygit &>/dev/null && print_success "lazygit instalado" || print_error "Error"
+    command -v lazygit &>/dev/null && print_success "lazygit instalado" || { print_error "Error instalando lazygit"; return 1; }
 }
 
 install_btop() {

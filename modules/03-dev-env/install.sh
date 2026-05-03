@@ -46,6 +46,7 @@ EOF
         print_success "Configuración básica creada en $nvim_init"
     else
         print_error "Error al instalar Neovim"
+        return 1
     fi
 }
 
@@ -69,6 +70,7 @@ install_c_cpp() {
         print_info "Puedes compilar con: clang archivo.c -o programa"
     else
         print_error "Error al instalar C/C++"
+        return 1
     fi
 }
 
@@ -164,6 +166,7 @@ install_python() {
         fi
     else
         print_error "Error al instalar Python"
+        return 1
     fi
 }
 
@@ -182,6 +185,7 @@ install_nodejs() {
         print_info "npm disponible: $(npm --version 2>/dev/null)"
     else
         print_error "Error al instalar Node.js"
+        return 1
     fi
 }
 
@@ -210,6 +214,7 @@ install_rust() {
         echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> "$HOME/.zshrc"
     else
         print_error "Error al instalar Rust"
+        return 1
     fi
 }
 

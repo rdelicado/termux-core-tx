@@ -127,7 +127,7 @@ show_main_menu() {
             case "$action" in
                 UP)    selected=$(clamp_selected $((selected - 1)) ${#options[@]}) ;;
                 DOWN)  selected=$(clamp_selected $((selected + 1)) ${#options[@]}) ;;
-                QUIT)  leave_tui; clear; exit 0 ;;
+                QUIT)  leave_tui; clear; return ;;
                 ENTER) break ;;
             esac
         done
@@ -144,7 +144,7 @@ show_main_menu() {
             8)  source "$PROJECT_ROOT/core/updater.sh" && update_core_tx ;;
             9)  show_uninstall_menu ;;
             10) show_logs ;;
-            11) leave_tui; clear; exit 0 ;;
+            11) leave_tui; clear; return ;;
         esac
     done
 }
@@ -183,14 +183,14 @@ show_appearance_menu() {
         done
 
         case $selected in
-            0) execute_action "bash \"\$PROJECT_ROOT/modules/01-appearance/zsh.sh\"" "ZSH + Oh My Zsh" ;;
-            1) execute_action "bash \"\$PROJECT_ROOT/modules/01-appearance/install.sh\"" "Powerlevel10k" ;;
-            2) execute_action "bash \"\$PROJECT_ROOT/modules/01-appearance/install.sh\"" "Plugins ZSH" ;;
-            3) execute_action "bash \"\$PROJECT_ROOT/modules/01-appearance/install.sh\"" "Plugins ZSH" ;;
-            4) execute_action "pkg install lsd -y" "LSD" ;;
-            5) execute_action "pkg install bat -y" "Bat" ;;
+            0) execute_action "source \"\$PROJECT_ROOT/modules/01-appearance/zsh.sh\" && install_zsh_full" "ZSH + Oh My Zsh" ;;
+            1) execute_action "source \"\$PROJECT_ROOT/modules/01-appearance/install.sh\" && install_powerlevel10k" "Powerlevel10k" ;;
+            2) execute_action "source \"\$PROJECT_ROOT/modules/01-appearance/install.sh\" && install_zsh_plugins" "Autosuggestions" ;;
+            3) execute_action "source \"\$PROJECT_ROOT/modules/01-appearance/install.sh\" && install_zsh_plugins" "Syntax Highlight" ;;
+            4) execute_action "source \"\$PROJECT_ROOT/modules/01-appearance/install.sh\" && install_lsd" "LSD" ;;
+            5) execute_action "source \"\$PROJECT_ROOT/modules/01-appearance/install.sh\" && install_bat" "Bat" ;;
             6) show_fonts_menu ;;
-            7) execute_action "bash \"\$PROJECT_ROOT/modules/01-appearance/install.sh\"" "Instalación Completa Apariencia" ;;
+            7) execute_action "source \"\$PROJECT_ROOT/modules/01-appearance/install.sh\" && install_all_appearance" "Instalación Completa Apariencia" ;;
             8) return ;;
         esac
     done
@@ -267,11 +267,11 @@ show_basetools_menu() {
         done
 
         case $selected in
-            0) execute_action "pkg install git -y" "Git" ;;
-            1) execute_action "pkg install wget -y" "Wget" ;;
-            2) execute_action "pkg install openssh -y" "OpenSSH" ;;
-            3) execute_action "pkg install fzf -y" "FZF" ;;
-            4) execute_action "pkg install btop -y || pkg install htop -y" "Btop/Htop" ;;
+            0) execute_action "source \"\$PROJECT_ROOT/modules/02-base-tools/install.sh\" && install_git" "Git" ;;
+            1) execute_action "source \"\$PROJECT_ROOT/modules/02-base-tools/install.sh\" && install_wget" "Wget" ;;
+            2) execute_action "source \"\$PROJECT_ROOT/modules/02-base-tools/install.sh\" && install_openssh" "OpenSSH" ;;
+            3) execute_action "source \"\$PROJECT_ROOT/modules/02-base-tools/install.sh\" && install_fzf" "FZF" ;;
+            4) execute_action "source \"\$PROJECT_ROOT/modules/02-base-tools/install.sh\" && install_btop" "Btop/Htop" ;;
             5) execute_action "source \"\$PROJECT_ROOT/modules/02-base-tools/install.sh\" && install_all_basetools" "Instalación Masiva: Herramientas Base" ;;
             6) return ;;
         esac

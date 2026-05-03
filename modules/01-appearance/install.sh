@@ -23,6 +23,7 @@ install_zsh() {
         fi
     else
         print_error "Error al instalar zsh"
+        return 1
     fi
 }
 
@@ -40,6 +41,7 @@ install_oh_my_zsh() {
         print_success "Oh My Zsh instalado"
     else
         print_error "Error al instalar Oh My Zsh"
+        return 1
     fi
 }
 
@@ -70,6 +72,7 @@ install_powerlevel10k() {
         fi
     else
         print_error "Error al instalar Powerlevel10k"
+        return 1
     fi
 }
 
@@ -83,7 +86,7 @@ install_zsh_plugins() {
         print_warning "zsh-autosuggestions ya existe"
     else
         git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions "$autosug"
-        [[ -d "$autosug" ]] && print_success "zsh-autosuggestions" || print_error "Error"
+        [[ -d "$autosug" ]] && print_success "zsh-autosuggestions" || { print_error "Error instalando zsh-autosuggestions"; return 1; }
     fi
     
     local syntax="$plugins_dir/zsh-syntax-highlighting"
@@ -91,7 +94,7 @@ install_zsh_plugins() {
         print_warning "zsh-syntax-highlighting ya existe"
     else
         git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting.git "$syntax"
-        [[ -d "$syntax" ]] && print_success "zsh-syntax-highlighting" || print_error "Error"
+        [[ -d "$syntax" ]] && print_success "zsh-syntax-highlighting" || { print_error "Error instalando zsh-syntax-highlighting"; return 1; }
     fi
     
     backup_zshrc
@@ -134,6 +137,7 @@ install_lsd() {
         fi
     else
         print_error "Error al instalar lsd"
+        return 1
     fi
 }
 
@@ -161,6 +165,7 @@ install_bat() {
         fi
     else
         print_error "Error al instalar bat"
+        return 1
     fi
 }
 
