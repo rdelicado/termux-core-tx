@@ -29,89 +29,51 @@ execute_action() {
 show_main_menu() {
     while true; do
         local options=(
-            "Apariencia|~150MB"
-            "Herramientas Base|~40MB"
-            "Entornos Dev|~900MB"
-            "Multiplexers|~5MB"
-            "PRoot Distro|~150MB"
-            "Dotfiles Manager|~1MB"
-            "Instalar Todo|~1.2GB"
-            "Ver Estado|"
-            "Update CORE-TX|"
-            "Desinstalador|"
-            "Ver Logs|"
-            "Salir|"
+            "Apariencia"
+            "Herramientas Base"
+            "Entornos Dev"
+            "Multiplexers"
+            "PRoot Distro"
+            "Dotfiles Manager"
+            "Instalar Todo"
+            "Ver Estado"
+            "Update CORE-TX"
+            "Desinstalador"
+            "Ver Logs"
+            "Salir"
         )
         local selected=0
         local key
-        local term_cols
-        local max_text_width
-        local content
-        local content_width
-        local content_pad
-        local title_text="Actions"
-
-        term_cols=$(tput cols)
-        max_text_width=$((term_cols - 6))
-        if [[ $max_text_width -lt 18 ]]; then
-            max_text_width=18
-        fi
 
         tput civis
         trap "tput cnorm; exit" INT TERM
 
         while true; do
-            if [[ $selected -lt 0 ]]; then
-                selected=$((${#options[@]} - 1))
-            elif [[ $selected -ge ${#options[@]} ]]; then
-                selected=0
-            fi
-
-            tput cup 0 0
-            tput ed
-            local frame=""
-            frame+="$(banner)"
-            frame+=$'\n'
-            content_width=${#title_text}
-            content_pad=$(((term_cols - content_width) / 2))
-            if [[ $content_pad -lt 0 ]]; then
-                content_pad=0
-            fi
-            frame+=$(printf '%*s%b\n' "$content_pad" '' "${COLOR_TITLE}${title_text}${RESET}")
-            for ((i=0; i<${#options[@]}; i++)); do
-                IFS='|' read -r name size <<< "${options[$i]}"
-                content="$name"
-                if [[ -n "$size" ]]; then
-                    content+="  $size"
-                fi
-                if [[ ${#content} -gt $max_text_width ]]; then
-                    content="${content:0:$((max_text_width - 1))}…"
-                fi
-
-                content_width=${#content}
-                content_pad=$(((term_cols - content_width) / 2))
-                if [[ $content_pad -lt 0 ]]; then
-                    content_pad=0
-                fi
-
+            # Clear first para evitar ghosting
+            clear
+            
+            # Imprimir banner
+            banner
+            
+            # Imprimir título
+            echo ""
+            echo "  Actions"
+            echo ""
+            
+            # Imprimir opciones con alineación fija
+            for i in "${!options[@]}"; do
                 if [[ $i -eq $selected ]]; then
-                    frame+=$(printf '%*s%b┃ %s%b\n' "$content_pad" '' "${COLOR_ACCENT}" "${COLOR_BG_SEL}${COLOR_SELECTED}${content}${RESET}" "")
+                    printf "  ▸ %-30s\n" "${options[$i]}"
                 else
-                    frame+=$(printf '%*s%b%s%b\n' "$content_pad" '' "${COLOR_UNSELECTED}" "$content" "$RESET")
+                    printf "    %-30s\n" "${options[$i]}"
                 fi
             done
-
-            frame+=$'\n'
-            content="↑/↓ navega   ↵ selecciona   q salir"
-            content_width=${#content}
-            content_pad=$(((term_cols - content_width) / 2))
-            if [[ $content_pad -lt 0 ]]; then
-                content_pad=0
-            fi
-            frame+=$(printf '%*s%b%s%b\n' "$content_pad" '' "${COLOR_MUTED}" "$content" "$RESET")
-
-            printf '%b' "$frame"
-
+            
+            # Pie de página
+            echo ""
+            echo "  ↑/↓ navega   ↵ selecciona   q salir"
+            
+            # Leer input
             read -rsn1 key
 
             case "$key" in
@@ -127,6 +89,13 @@ show_main_menu() {
                 'q') tput cnorm; clear; exit 0 ;;
                 "") break ;;
             esac
+
+            # Wrap around
+            if [[ $selected -lt 0 ]]; then
+                selected=$((${#options[@]} - 1))
+            elif [[ $selected -ge ${#options[@]} ]]; then
+                selected=0
+            fi
         done
 
         tput cnorm

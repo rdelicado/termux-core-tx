@@ -22,49 +22,16 @@ print_info()    { echo -e "${CYAN}[INFO]${NC} $1"; }
 print_header()  { echo -e "\n${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}\n${BOLD}$1${NC}\n${GRAY}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"; }
 
 banner() {
-    local c1='\033[38;5;51m'   # Cyan claro
-    local c2='\033[38;5;45m'
-    local c3='\033[38;5;39m'   # Cyan medio
-    local c4='\033[38;5;33m'
-    local c5='\033[38;5;27m'   # Azul oscuro
-    local m1='\033[38;5;199m'  # Magenta brillante
-    local dim='\033[2m'        # Texto tenue
-    local reset='\033[0m'
-    local cols rows pad left_margin current_os
+    cat << 'EOF'
+ ██████╗ ██████╗ ██████╗ ███████╗    ████████╗██╗  ██╗
+██╔════╝██╔═══██╗██╔══██╗██╔════╝    ╚══██╔══╝╚██╗██╔╝
+██║     ██║   ██║██████╔╝█████╗ █████╗██║   ███╔╝█╗
+██║     ██║   ██║██╔══██╗██╔══╝ ╚════╝██║   ██╔═╝███║
+╚██████╗╚██████╔╝██║  ██║███████╗    ██║   ██║   ╚██║
+ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝    ╚═╝   ╚═╝    ╚═╝
 
-    cols=$(tput cols 2>/dev/null || echo 80)
-    rows=$(tput lines 2>/dev/null || echo 24)
-    current_os=$(uname -o 2>/dev/null || uname -s)
-
-    if [[ $cols -lt 72 || $rows -lt 22 ]]; then
-        left_margin=0
-        if [[ $cols -gt 24 ]]; then
-            left_margin=$(((cols - 24) / 2))
-        fi
-
-        printf '%*s%s\n' "$left_margin" '' "${c1}CORE-TX${reset} ${dim}•${reset} ${m1}Gestor de Entornos${reset}"
-        printf '%*s%s\n' "$left_margin" '' "${c3}Termux / Android${reset}"
-        printf '%*s%s\n' "$left_margin" '' "${c1}OS:${reset} ${current_os}   ${dim}│${reset}   ${c3}USER:${reset} ${USER}"
-        printf '\n'
-        return
-    fi
-
-    pad=$(((cols - 46) / 2))
-    if [[ $pad -lt 0 ]]; then
-        pad=0
-    fi
-
-    # Logo CORE TX perfectamente alineado y simétrico
-    printf '%*s%s\n' "$pad" '' "${c1}   ______  ____  ____  ______     ${m1} _______  __ ${reset}"
-    printf '%*s%s\n' "$pad" '' "${c2}  / ____/ / __ \\/ __ \\/ ____/    ${m1} /_  __/ |/ / ${reset}"
-    printf '%*s%s\n' "$pad" '' "${c3} / /     / / / / /_/ / __/       ${m1}  / /  |   /  ${reset}"
-    printf '%*s%s\n' "$pad" '' "${c4}/ /___  / /_/ / _, _/ /___       ${m1} / /  /   |   ${reset}"
-    printf '%*s%s\n' "$pad" '' "${c5}\\____/  \\____/_/ |_/_____/       ${m1}/_/  /_/|_|   ${reset}"
-    echo ""
-    
-    # Info Bar simplificada (Sin líneas divisorias)
-    printf '%*s%s\n' "$pad" '' "${c1}OS:${reset} ${current_os}   ${dim}│${reset}   ${c3}USER:${reset} $USER"
-    echo ""
+Environment Manager for Termux & WSL2
+EOF
 }
 
 install_package() {
