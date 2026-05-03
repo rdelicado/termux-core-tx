@@ -44,17 +44,17 @@ show_main_menu() {
         )
         local selected=0
         local key
-        local term_rows
-        local visible_rows
-        local window_start=0
-        local window_end=0
-        local header_rows=8
-        local footer_rows=2
+        local term_cols
+        local max_text_width
+        local content
+        local content_width
+        local content_pad
+        local title_text="Actions"
 
-        term_rows=$(tput lines)
-        visible_rows=$((term_rows - header_rows - footer_rows))
-        if [[ $visible_rows -lt 3 ]]; then
-            visible_rows=3
+        term_cols=$(tput cols)
+        max_text_width=$((term_cols - 6))
+        if [[ $max_text_width -lt 18 ]]; then
+            max_text_width=18
         fi
 
         tput civis
@@ -67,46 +67,48 @@ show_main_menu() {
                 selected=0
             fi
 
-            if [[ $selected -lt $window_start ]]; then
-                window_start=$selected
-            elif [[ $selected -ge $((window_start + visible_rows)) ]]; then
-                window_start=$((selected - visible_rows + 1))
-            fi
-
-            if [[ $window_start -lt 0 ]]; then
-                window_start=0
-            fi
-
-            window_end=$((window_start + visible_rows - 1))
-            if [[ $window_end -ge ${#options[@]} ]]; then
-                window_end=$((${#options[@]} - 1))
-                window_start=$((window_end - visible_rows + 1))
-                if [[ $window_start -lt 0 ]]; then
-                    window_start=0
-                fi
-            fi
-
             tput cup 0 0
             tput ed
             local frame=""
             frame+="$(banner)"
             frame+=$'\n'
-            frame+=$(printf '  %b\n' "${COLOR_TITLE}Actions${RESET}")
-            for ((i=window_start; i<=window_end; i++)); do
+            content_width=${#title_text}
+            content_pad=$(((term_cols - content_width) / 2))
+            if [[ $content_pad -lt 0 ]]; then
+                content_pad=0
+            fi
+            frame+=$(printf '%*s%b\n' "$content_pad" '' "${COLOR_TITLE}${title_text}${RESET}")
+            for ((i=0; i<${#options[@]}; i++)); do
                 IFS='|' read -r name size <<< "${options[$i]}"
+                content="$name"
+                if [[ -n "$size" ]]; then
+                    content+="  $size"
+                fi
+                if [[ ${#content} -gt $max_text_width ]]; then
+                    content="${content:0:$((max_text_width - 1))}…"
+                fi
+
+                content_width=${#content}
+                content_pad=$(((term_cols - content_width) / 2))
+                if [[ $content_pad -lt 0 ]]; then
+                    content_pad=0
+                fi
+
                 if [[ $i -eq $selected ]]; then
-                    frame+=$(printf '  %b┃%b %-26s %b%7s %b\n' "${COLOR_ACCENT}" "${COLOR_BG_SEL}${COLOR_SELECTED}" "$name" "${COLOR_SIZE}" "$size" "${RESET}")
+                    frame+=$(printf '%*s%b┃ %s%b\n' "$content_pad" '' "${COLOR_ACCENT}" "${COLOR_BG_SEL}${COLOR_SELECTED}${content}${RESET}" "")
                 else
-                    frame+=$(printf '    %b%-26s %b%7s %b\n' "${COLOR_UNSELECTED}" "$name" "${COLOR_MUTED}" "$size" "${RESET}")
+                    frame+=$(printf '%*s%b%s%b\n' "$content_pad" '' "${COLOR_UNSELECTED}" "$content" "$RESET")
                 fi
             done
 
-            if [[ ${#options[@]} -gt visible_rows ]]; then
-                frame+=$(printf '  %b▸ mostrando %s-%s de %s%b\n' "${COLOR_MUTED}" "$((window_start + 1))" "$((window_end + 1))" "${#options[@]}" "${RESET}")
-            fi
-
             frame+=$'\n'
-            frame+=$(printf '  %b↑/↓ navega   ↵ selecciona   q salir%b\n' "${COLOR_MUTED}" "${RESET}")
+            content="↑/↓ navega   ↵ selecciona   q salir"
+            content_width=${#content}
+            content_pad=$(((term_cols - content_width) / 2))
+            if [[ $content_pad -lt 0 ]]; then
+                content_pad=0
+            fi
+            frame+=$(printf '%*s%b%s%b\n' "$content_pad" '' "${COLOR_MUTED}" "$content" "$RESET")
 
             printf '%b' "$frame"
 
