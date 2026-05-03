@@ -53,7 +53,7 @@ show_main_menu() {
         echo -e "  ${COLOR_TITLE}Actions${RESET}\n"
 
         while true; do
-            printf '\033[H'
+            printf '\033[10;0H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -132,7 +132,7 @@ show_appearance_menu() {
         echo -e "  ${COLOR_TITLE}Apariencia${RESET}\n"
 
         while true; do
-            printf '\033[H'
+            printf '\033[10;0H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -204,7 +204,7 @@ show_fonts_menu() {
         echo -e "  ${COLOR_TITLE}Fuentes Nerd Fonts${RESET}\n"
 
         while true; do
-            printf '\033[H'
+            printf '\033[10;0H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -274,7 +274,7 @@ show_basetools_menu() {
         echo -e "  ${COLOR_TITLE}Herramientas Base${RESET}\n"
 
         while true; do
-            printf '\033[H'
+            printf '\033[10;0H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -346,7 +346,7 @@ show_devenv_menu() {
         echo -e "  ${COLOR_TITLE}Entornos de Desarrollo${RESET}\n"
 
         while true; do
-            printf '\033[H'
+            printf '\033[10;0H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -413,7 +413,7 @@ show_multiplexers_menu() {
         echo -e "  ${COLOR_TITLE}Multiplexers${RESET}\n"
 
         while true; do
-            printf '\033[H'
+            printf '\033[10;0H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -481,7 +481,7 @@ show_proot_menu() {
         echo -e "  ${COLOR_TITLE}PRoot Distro${RESET}\n"
 
         while true; do
-            printf '\033[H'
+            printf '\033[10;0H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -760,7 +760,7 @@ show_uninstall_menu() {
         echo -e "  ${COLOR_TITLE}Desinstalador Inteligente${RESET}\n"
 
         while true; do
-            printf '\033[H'
+            printf '\033[10;0H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -828,7 +828,7 @@ show_uninstall_multiplexers() {
         echo -e "  ${COLOR_TITLE}Desinstalar Multiplexers${RESET}\n"
 
         while true; do
-            printf '\033[H'
+            printf '\033[10;0H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -892,7 +892,7 @@ show_uninstall_proot() {
         echo -e "  ${COLOR_TITLE}Desinstalar PRoot Distro${RESET}\n"
 
         while true; do
-            printf '\033[H'
+            printf '\033[10;0H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -962,7 +962,7 @@ show_uninstall_appearance() {
         echo -e "  ${COLOR_TITLE}Desinstalar Apariencia${RESET}\n"
 
         while true; do
-            printf '\033[H'
+            printf '\033[10;0H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -1034,7 +1034,7 @@ show_uninstall_basetools() {
         echo -e "  ${COLOR_TITLE}Desinstalar Herramientas Base${RESET}\n"
 
         while true; do
-            printf '\033[H'
+            printf '\033[10;0H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -1105,7 +1105,7 @@ show_uninstall_devenv() {
         echo -e "  ${COLOR_TITLE}Desinstalar Entornos Dev${RESET}\n"
 
         while true; do
-            printf '\033[H'
+            printf '\033[10;0H'
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
