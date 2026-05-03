@@ -20,25 +20,21 @@ log_init() {
 log_info() {
     local msg="$1"
     echo "[INFO] $(date +%H:%M:%S) - $msg" | tee -a "$LOG_FILE"
-    print_info "$msg"
 }
 
 log_success() {
     local msg="$1"
     echo "[OK] $(date +%H:%M:%S) - $msg" | tee -a "$LOG_FILE"
-    print_success "$msg"
 }
 
 log_warning() {
     local msg="$1"
     echo "[WARN] $(date +%H:%M:%S) - $msg" | tee -a "$LOG_FILE"
-    print_warning "$msg"
 }
 
 log_error() {
     local msg="$1"
     echo "[ERROR] $(date +%H:%M:%S) - $msg" | tee -a "$LOG_FILE"
-    print_error "$msg"
 }
 
 log_install() {

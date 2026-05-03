@@ -6,7 +6,6 @@ export PROJECT_ROOT
 
 source "$PROJECT_ROOT/core/detection.sh"
 source "$PROJECT_ROOT/core/utils.sh"
-source "$PROJECT_ROOT/core/menu.sh"
 
 ensure_proot_distro_support() {
     if [[ "$(detect_os)" != "android" ]]; then
@@ -176,81 +175,7 @@ delete_proot_alpine() {
     print_success "Alpine eliminado"
 }
 
-show_proot_menu() {
-    while true; do
-        local options=(
-            "Instalar proot-distro    (Paquete base)"
-            "Instalar Debian          (Distribución Debian)"
-            "Instalar Alpine          (Distribución Alpine)"
-            "Login Debian             (Entrar al contenedor)"
-            "Login Alpine             (Entrar al contenedor)"
-            "Eliminar Debian          (Borrar contenedor)"
-            "Eliminar Alpine          (Borrar contenedor)"
-            "Volver                   (Regresar al menú principal)"
-        )
-        local selected=0
-        local key
-
-        tput civis
-        trap "tput cnorm; exit" INT TERM
-
-        clear
-        banner
-        echo -e "  ${COLOR_TITLE}PRoot Distro${RESET}\n"
-        tput sc
-
-        while true; do
-            tput rc
-
-            for i in "${!options[@]}"; do
-                if [[ $i -eq $selected ]]; then
-                    echo -e "\e[K  ${COLOR_SELECTED}▸ ${options[$i]}${RESET}"
-                else
-                    echo -e "\e[K      ${COLOR_UNSELECTED}${options[$i]}${RESET}"
-                fi
-            done
-
-            echo -e "\e[K"
-            echo -e "\e[K  ${COLOR_MUTED}j/k o flechas: navegar  •  enter: seleccionar  •  q: salir${RESET}"
-
-            read -rsn1 key
-
-            case "$key" in
-                $'\e')
-                    read -rsn2 key
-                    case "$key" in
-                        '[A') ((selected--)) ;;
-                        '[B') ((selected++)) ;;
-                    esac
-                    ;;
-                'k') ((selected--)) ;;
-                'j') ((selected++)) ;;
-                'q') tput cnorm; return ;;
-                "") break ;;
-            esac
-
-            if [[ $selected -lt 0 ]]; then
-                selected=$((${#options[@]} - 1))
-            elif [[ $selected -ge ${#options[@]} ]]; then
-                selected=0
-            fi
-        done
-
-        tput cnorm
-
-        case $selected in
-            0) execute_action "source \"$PROJECT_ROOT/modules/05-proot/install.sh\" && install_proot_distro" "proot-distro" ;;
-            1) execute_action "source \"$PROJECT_ROOT/modules/05-proot/install.sh\" && install_proot_debian" "Debian" ;;
-            2) execute_action "source \"$PROJECT_ROOT/modules/05-proot/install.sh\" && install_proot_alpine" "Alpine" ;;
-            3) execute_action "source \"$PROJECT_ROOT/modules/05-proot/install.sh\" && login_proot_debian" "Login Debian" ;;
-            4) execute_action "source \"$PROJECT_ROOT/modules/05-proot/install.sh\" && login_proot_alpine" "Login Alpine" ;;
-            5) execute_action "source \"$PROJECT_ROOT/modules/05-proot/install.sh\" && delete_proot_debian" "Eliminar Debian" ;;
-            6) execute_action "source \"$PROJECT_ROOT/modules/05-proot/install.sh\" && delete_proot_alpine" "Eliminar Alpine" ;;
-            7) return ;;
-        esac
-    done
-}
-
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
-    show_proot_menu
+    echo "Este módulo debe ser cargado desde el instalador principal (bin/main.sh)."
+    echo "Uso directo: source modules/05-proot/install.sh && install_proot_distro"
 fi

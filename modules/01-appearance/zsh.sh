@@ -106,4 +106,6 @@ install_zsh_full() {
     print_info "Ejecuta 'zsh' para ver los cambios"
 }
 
-install_zsh_full "$@"
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    install_zsh_full "$@"
+fi

@@ -2,6 +2,7 @@
 
 source "$PROJECT_ROOT/core/detection.sh"
 source "$PROJECT_ROOT/core/utils.sh"
+source "$PROJECT_ROOT/core/backup.sh"
 
 install_git() {
     print_info "Instalando git..."
@@ -75,6 +76,7 @@ install_fzf() {
         local fzf_dir="$HOME/.fzf"
         if [[ -d "$fzf_dir" ]]; then
             if ! grep -q "fzf" "$HOME/.zshrc" 2>/dev/null; then
+                backup_zshrc
                 echo "" >> "$HOME/.zshrc"
                 echo "# FZF" >> "$HOME/.zshrc"
                 echo "[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh" >> "$HOME/.zshrc"
@@ -93,27 +95,47 @@ install_zoxide() {
     fi
     
     local os=$(detect_os)
+    
+    # On Android, use package manager (no sudo available)
+    if [[ "$os" == "android" ]]; then
+        install_package "zoxide"
+        if command -v zoxide &>/dev/null; then
+            print_success "zoxide instalado"
+            backup_zshrc
+            echo "" >> "$HOME/.zshrc"
+            echo "# Zoxide" >> "$HOME/.zshrc"
+            echo 'eval "$(zoxide init zsh)"' >> "$HOME/.zshrc"
+            print_info "Añadido init a .zshrc"
+        fi
+        return $?
+    fi
+    
     local arch=$(uname -m)
     local ext=""
     
     case "$os" in
-        android) ext="aarch64" ;;
         linux)  [[ "$arch" == "x86_64" ]] && ext="x86_64" || ext="aarch64" ;;
         darwin) [[ "$arch" == "x86_64" ]] && ext="x86_64" || ext="arm64" ;;
+        *)      install_package "zoxide" 2>/dev/null || print_error "Error instalando zoxide"; return 1 ;;
     esac
     
-    local version="0.9.0"
+    local version="${ZOXIDE_VERSION:-0.9.0}"
     local url="https://github.com/ajeetdsouza/zoxide/releases/download/v${version}/zoxide-v${version}-${ext}-unknown-linux-musl.tar.gz"
     
     cd /tmp
     if curl -sSL "$url" -o zoxide.tar.gz; then
         tar -xzf zoxide.tar.gz
-        sudo mv zoxide /usr/local/bin/
+        if command -v sudo &>/dev/null; then
+            sudo mv zoxide /usr/local/bin/
+        else
+            mv zoxide /usr/local/bin/
+        fi
         rm zoxide.tar.gz
         
         if command -v zoxide &>/dev/null; then
             print_success "zoxide instalado"
             
+            backup_zshrc
             echo "" >> "$HOME/.zshrc"
             echo "# Zoxide" >> "$HOME/.zshrc"
             echo 'eval "$(zoxide init zsh)"' >> "$HOME/.zshrc"
@@ -172,31 +194,3 @@ install_all_basetools() {
     print_success "Herramientas base instaladas"
 }
 
-run_basetools_module() {
-    local choice
-    show_basetools_menu
-    read -r choice
-    
-    case "$choice" in
-        1) install_git ;;
-        2) install_wget ;;
-        3) install_openssh ;;
-        4) install_fzf ;;
-        5) install_zoxide ;;
-        6) install_lazygit ;;
-        7) install_btop ;;
-        8) 
-            print_info "Instalando herramientas base..."
-            install_git
-            install_wget
-            install_openssh
-            install_fzf
-            install_zoxide
-            install_lazygit
-            install_btop
-            print_success "Módulo Herramientas Base completado"
-            ;;
-        0) return ;;
-        *) print_error "Opción inválida" ;;
-    esac
-}

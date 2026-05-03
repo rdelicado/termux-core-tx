@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 COLOR_TITLE='\033[1;38;5;51m'
 COLOR_SELECTED='\033[1;38;5;231m'
@@ -21,25 +21,18 @@ leave_tui() {
 }
 
 get_banner_height() {
-    local cols
-    cols=$(tput cols 2>/dev/null || echo 80)
-    if [[ $cols -lt 42 ]]; then echo 3
-    elif [[ $cols -lt 56 ]]; then echo 6
-    else echo 8
-    fi
+    echo 6  # 5 lines ASCII + 1 line subtitle
 }
 
 draw_menu_header() {
-    local title="$1"
     clear
     banner
-    printf "\n  ${COLOR_TITLE}%s${RESET}\n\n" "$title"
 }
 
 draw_options() {
     local -n _options=$1
     local _selected=$2
-    local opt_start=$(( $(get_banner_height) + 2 ))
+    local opt_start=$(get_banner_height)
     tput cup "$opt_start" 0
     for i in "${!_options[@]}"; do
         IFS='|' read -r name size <<< "${_options[$i]}"
@@ -94,7 +87,7 @@ execute_action() {
     banner
     echo -e "\n  ${COLOR_TITLE}[  EJECUTANDO: $action_name ]${RESET}\n"
     
-    eval "$command"
+    bash -c "$command"
     
     echo -e "\n  ${COLOR_MUTED}Presiona ENTER para volver al menú...${RESET}"
     read -r
@@ -124,7 +117,7 @@ show_main_menu() {
     local selected=0
 
     while true; do
-        draw_menu_header "Actions"
+        draw_menu_header
 
         while true; do
             draw_options options selected
@@ -174,7 +167,7 @@ show_appearance_menu() {
     local selected=0
 
     while true; do
-        draw_menu_header "Apariencia"
+        draw_menu_header
 
         while true; do
             draw_options options selected
@@ -217,7 +210,7 @@ show_fonts_menu() {
     local selected=0
 
     while true; do
-        draw_menu_header "Fuentes Nerd Fonts"
+        draw_menu_header
 
         while true; do
             draw_options options selected
@@ -258,7 +251,7 @@ show_basetools_menu() {
     local selected=0
 
     while true; do
-        draw_menu_header "Herramientas Base"
+        draw_menu_header
 
         while true; do
             draw_options options selected
@@ -301,7 +294,7 @@ show_devenv_menu() {
     local selected=0
 
     while true; do
-        draw_menu_header "Entornos de Desarrollo"
+        draw_menu_header
 
         while true; do
             draw_options options selected
@@ -339,7 +332,7 @@ show_multiplexers_menu() {
     local selected=0
 
     while true; do
-        draw_menu_header "Multiplexers"
+        draw_menu_header
 
         while true; do
             draw_options options selected
@@ -378,7 +371,7 @@ show_proot_menu() {
     local selected=0
 
     while true; do
-        draw_menu_header "PRoot Distro"
+        draw_menu_header
 
         while true; do
             draw_options options selected
@@ -501,7 +494,7 @@ show_uninstall_menu() {
     local selected=0
 
     while true; do
-        draw_menu_header "Desinstalador Inteligente"
+        draw_menu_header
 
         while true; do
             draw_options options selected
@@ -540,7 +533,7 @@ show_uninstall_multiplexers() {
     local selected=0
 
     while true; do
-        draw_menu_header "Desinstalar Multiplexers"
+        draw_menu_header
 
         while true; do
             draw_options options selected
@@ -575,7 +568,7 @@ show_uninstall_proot() {
     local selected=0
 
     while true; do
-        draw_menu_header "Desinstalar PRoot Distro"
+        draw_menu_header
 
         while true; do
             draw_options options selected
@@ -616,7 +609,7 @@ show_uninstall_appearance() {
     local selected=0
 
     while true; do
-        draw_menu_header "Desinstalar Apariencia"
+        draw_menu_header
 
         while true; do
             draw_options options selected
@@ -659,7 +652,7 @@ show_uninstall_basetools() {
     local selected=0
 
     while true; do
-        draw_menu_header "Desinstalar Herramientas Base"
+        draw_menu_header
 
         while true; do
             draw_options options selected
@@ -701,7 +694,7 @@ show_uninstall_devenv() {
     local selected=0
 
     while true; do
-        draw_menu_header "Desinstalar Entornos Dev"
+        draw_menu_header
 
         while true; do
             draw_options options selected

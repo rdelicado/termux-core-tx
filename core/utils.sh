@@ -22,8 +22,6 @@ print_info()    { echo -e "${CYAN}[INFO]${NC} $1"; }
 print_header()  { echo -e "\n${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}\n${BOLD}$1${NC}\n${GRAY}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"; }
 
 banner() {
-    local cols
-    cols=$(tput cols 2>/dev/null || echo 80)
     local c1='\033[38;5;51m'
     local c2='\033[38;5;45m'
     local c3='\033[38;5;39m'
@@ -33,21 +31,13 @@ banner() {
     local dim='\033[2m'
     local reset='\033[0m'
 
-    # Minimal version for narrow screens (Termux directo < 56 cols)
-    # ASCII art distorts on Termux's font/narrow screen - use text only
-    if [[ $cols -lt 56 ]]; then
-        printf '%bCORE %bTX%b\n' "$c1" "$m1" "$reset"
-        printf '%bTermux Toolkit%b\n' "$c3" "$reset"
-        printf '\n'
-        return
-    fi
-
+    # Full ASCII art banner for ALL screen sizes
+    # Compact version that fits in ~40 columns
     printf '%b\n' "${c1}   ______  ____  ____  ______     ${m1} _______  __ ${reset}"
     printf '%b\n' "${c2}  / ____/ / __ \\/ __ \\/ ____/    ${m1} /_  __/ |/ / ${reset}"
     printf '%b\n' "${c3} / /     / / / / /_/ / __/       ${m1}  / /  |   /  ${reset}"
     printf '%b\n' "${c4}/ /___  / /_/ / _, _/ /___       ${m1} / /  /   |   ${reset}"
     printf '%b\n' "${c5}\\____/  \\____/_/ |_/_____/       ${m1}/_/  /_/|_|   ${reset}"
-    printf '\n'
     printf '%b\n' "${c1}Termux Toolkit${dim} │ Environment Manager${reset}"
     printf '\n'
 }

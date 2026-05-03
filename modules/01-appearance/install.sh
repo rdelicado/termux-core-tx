@@ -179,27 +179,3 @@ install_all_appearance() {
     print_success "Apariencia completa instalada"
 }
 
-run_appearance_module() {
-    local choice
-    show_appearance_menu
-    read -r choice
-    
-    case "$choice" in
-        1) install_zsh && install_oh_my_zsh ;;
-        2) install_powerlevel10k ;;
-        3|4) install_zsh_plugins ;;
-        5) install_lsd ;;
-        6) install_bat ;;
-        7) 
-            print_info "Instalando apariencia completa..."
-            install_zsh && install_oh_my_zsh
-            install_powerlevel10k
-            install_zsh_plugins
-            install_lsd
-            install_bat
-            print_success "Módulo Apariencia completado"
-            ;;
-        0) return ;;
-        *) print_error "Opción inválida" ;;
-    esac
-}

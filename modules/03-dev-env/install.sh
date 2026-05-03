@@ -94,7 +94,7 @@ install_go() {
             *)      go_arch="amd64" ;;
         esac
         
-        local go_version="1.21.5"
+        local go_version="${GO_VERSION:-1.21.5}"
         local go_file="go${go_version}.linux-${go_arch}.tar.gz"
         local go_url="https://go.dev/dl/${go_file}"
         
@@ -107,13 +107,19 @@ install_go() {
         fi
         
         if [[ -f "$go_file" ]]; then
-            sudo rm -rf /usr/local/go
-            sudo tar -C /usr/local -xzf "$go_file"
+            if command -v sudo &>/dev/null; then
+                sudo rm -rf /usr/local/go
+                sudo tar -C /usr/local -xzf "$go_file"
+            else
+                rm -rf /usr/local/go
+                tar -C /usr/local -xzf "$go_file"
+            fi
             rm "$go_file"
             
             if command -v go &>/dev/null; then
                 print_success "Go instalado: $(go version)"
                 
+                backup_zshrc
                 echo "" >> "$HOME/.zshrc"
                 echo "# Go" >> "$HOME/.zshrc"
                 echo 'export PATH=$PATH:/usr/local/go/bin' >> "$HOME/.zshrc"
@@ -198,6 +204,7 @@ install_rust() {
         export PATH="$HOME/.cargo/bin:$PATH"
         print_success "Rust instalado: $(rustc --version)"
         
+        backup_zshrc
         echo "" >> "$HOME/.zshrc"
         echo "# Rust" >> "$HOME/.zshrc"
         echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> "$HOME/.zshrc"
@@ -216,27 +223,3 @@ install_all_devenvs() {
     print_success "Entornos de desarrollo instalados"
 }
 
-run_devenv_module() {
-    local choice
-    show_devenv_menu
-    read -r choice
-    
-    case "$choice" in
-        1) install_neovim ;;
-        2) install_c_cpp ;;
-        3) install_go ;;
-        4) install_python ;;
-        5) install_nodejs ;;
-        6) 
-            print_info "Instalando entornos de desarrollo..."
-            install_neovim
-            install_c_cpp
-            install_go
-            install_python
-            install_nodejs
-            print_success "Módulo Entornos Dev completado"
-            ;;
-        0) return ;;
-        *) print_error "Opción inválida" ;;
-    esac
-}
