@@ -48,12 +48,10 @@ show_main_menu() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-        clear
-        banner
-        echo -e "  ${COLOR_TITLE}Actions${RESET}\n"
-
         while true; do
-            printf '\033[10;0H'
+            tput cup 0 0
+            banner
+            echo -e "  ${COLOR_TITLE}Actions${RESET}\n"
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -65,6 +63,7 @@ show_main_menu() {
 
             echo -e "\e[K"
             echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
+            tput ed
 
             read -rsn1 key
 
@@ -127,12 +126,10 @@ show_appearance_menu() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-        clear
-        banner
-        echo -e "  ${COLOR_TITLE}Apariencia${RESET}\n"
-
         while true; do
-            printf '\033[10;0H'
+            tput cup 0 0
+            banner
+            echo -e "  ${COLOR_TITLE}Apariencia${RESET}\n"
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -144,6 +141,7 @@ show_appearance_menu() {
 
             echo -e "\e[K"
             echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
+            tput ed
 
             read -rsn1 key
 
@@ -199,12 +197,10 @@ show_fonts_menu() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-        clear
-        banner
-        echo -e "  ${COLOR_TITLE}Fuentes Nerd Fonts${RESET}\n"
-
         while true; do
-            printf '\033[10;0H'
+            tput cup 0 0
+            banner
+            echo -e "  ${COLOR_TITLE}Fuentes Nerd Fonts${RESET}\n"
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -216,6 +212,7 @@ show_fonts_menu() {
 
             echo -e "\e[K"
             echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
+            tput ed
 
             read -rsn1 key
 
@@ -269,12 +266,10 @@ show_basetools_menu() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-        clear
-        banner
-        echo -e "  ${COLOR_TITLE}Herramientas Base${RESET}\n"
-
         while true; do
-            printf '\033[10;0H'
+            tput cup 0 0
+            banner
+            echo -e "  ${COLOR_TITLE}Herramientas Base${RESET}\n"
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -286,6 +281,7 @@ show_basetools_menu() {
 
             echo -e "\e[K"
             echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
+            tput ed
 
             read -rsn1 key
 
@@ -341,12 +337,10 @@ show_devenv_menu() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-        clear
-        banner
-        echo -e "  ${COLOR_TITLE}Entornos de Desarrollo${RESET}\n"
-
         while true; do
-            printf '\033[10;0H'
+            tput cup 0 0
+            banner
+            echo -e "  ${COLOR_TITLE}Entornos de Desarrollo${RESET}\n"
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -358,6 +352,7 @@ show_devenv_menu() {
 
             echo -e "\e[K"
             echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
+            tput ed
 
             read -rsn1 key
 
@@ -408,12 +403,10 @@ show_multiplexers_menu() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-        clear
-        banner
-        echo -e "  ${COLOR_TITLE}Multiplexers${RESET}\n"
-
         while true; do
-            printf '\033[10;0H'
+            tput cup 0 0
+            banner
+            echo -e "  ${COLOR_TITLE}Multiplexers${RESET}\n"
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -425,6 +418,7 @@ show_multiplexers_menu() {
 
             echo -e "\e[K"
             echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
+            tput ed
 
             read -rsn1 key
 
@@ -476,12 +470,10 @@ show_proot_menu() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-        clear
-        banner
-        echo -e "  ${COLOR_TITLE}PRoot Distro${RESET}\n"
-
         while true; do
-            printf '\033[10;0H'
+            tput cup 0 0
+            banner
+            echo -e "  ${COLOR_TITLE}PRoot Distro${RESET}\n"
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -493,6 +485,7 @@ show_proot_menu() {
 
             echo -e "\e[K"
             echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
+            tput ed
 
             read -rsn1 key
 
@@ -755,12 +748,10 @@ show_uninstall_menu() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-        clear
-        banner
-        echo -e "  ${COLOR_TITLE}Desinstalador Inteligente${RESET}\n"
-
         while true; do
-            printf '\033[10;0H'
+            tput cup 0 0
+            banner
+            echo -e "  ${COLOR_TITLE}Desinstalador Inteligente${RESET}\n"
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -772,6 +763,7 @@ show_uninstall_menu() {
 
             echo -e "\e[K"
             echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
+            tput ed
 
             read -rsn1 key
 
@@ -823,12 +815,10 @@ show_uninstall_multiplexers() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-        clear
-        banner
-        echo -e "  ${COLOR_TITLE}Desinstalar Multiplexers${RESET}\n"
-
         while true; do
-            printf '\033[10;0H'
+            tput cup 0 0
+            banner
+            echo -e "  ${COLOR_TITLE}Desinstalar Multiplexers${RESET}\n"
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -840,6 +830,7 @@ show_uninstall_multiplexers() {
 
             echo -e "\e[K"
             echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
+            tput ed
 
             read -rsn1 key
 
@@ -887,12 +878,10 @@ show_uninstall_proot() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-        clear
-        banner
-        echo -e "  ${COLOR_TITLE}Desinstalar PRoot Distro${RESET}\n"
-
         while true; do
-            printf '\033[10;0H'
+            tput cup 0 0
+            banner
+            echo -e "  ${COLOR_TITLE}Desinstalar PRoot Distro${RESET}\n"
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -904,6 +893,7 @@ show_uninstall_proot() {
 
             echo -e "\e[K"
             echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
+            tput ed
 
             read -rsn1 key
 
@@ -957,12 +947,10 @@ show_uninstall_appearance() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-        clear
-        banner
-        echo -e "  ${COLOR_TITLE}Desinstalar Apariencia${RESET}\n"
-
         while true; do
-            printf '\033[10;0H'
+            tput cup 0 0
+            banner
+            echo -e "  ${COLOR_TITLE}Desinstalar Apariencia${RESET}\n"
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -974,6 +962,7 @@ show_uninstall_appearance() {
 
             echo -e "\e[K"
             echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
+            tput ed
 
             read -rsn1 key
 
@@ -1029,12 +1018,10 @@ show_uninstall_basetools() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-        clear
-        banner
-        echo -e "  ${COLOR_TITLE}Desinstalar Herramientas Base${RESET}\n"
-
         while true; do
-            printf '\033[10;0H'
+            tput cup 0 0
+            banner
+            echo -e "  ${COLOR_TITLE}Desinstalar Herramientas Base${RESET}\n"
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -1046,6 +1033,7 @@ show_uninstall_basetools() {
 
             echo -e "\e[K"
             echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
+            tput ed
 
             read -rsn1 key
 
@@ -1100,12 +1088,10 @@ show_uninstall_devenv() {
         tput civis
         trap "tput cnorm; exit" INT TERM
 
-        clear
-        banner
-        echo -e "  ${COLOR_TITLE}Desinstalar Entornos Dev${RESET}\n"
-
         while true; do
-            printf '\033[10;0H'
+            tput cup 0 0
+            banner
+            echo -e "  ${COLOR_TITLE}Desinstalar Entornos Dev${RESET}\n"
             for i in "${!options[@]}"; do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
@@ -1117,6 +1103,7 @@ show_uninstall_devenv() {
 
             echo -e "\e[K"
             echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
+            tput ed
 
             read -rsn1 key
 
