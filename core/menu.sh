@@ -90,6 +90,7 @@ show_main_menu() {
             tput ed
             local frame=""
             frame+="$(banner)"
+            frame+=$'\n'
             frame+=$(printf '  %b\n' "${COLOR_TITLE}Actions${RESET}")
             for ((i=window_start; i<=window_end; i++)); do
                 IFS='|' read -r name size <<< "${options[$i]}"

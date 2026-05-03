@@ -42,8 +42,8 @@ banner() {
             left_margin=$(((cols - 24) / 2))
         fi
 
-        printf '%*s%s\n' "$left_margin" '' "${c1}██████╗ ██████╗ ███████╗${m1} ████████╗██╗  ██╗${reset}"
-        printf '%*s%s\n' "$left_margin" '' "${c3}CORE-TX${reset} ${dim}•${reset} ${c1}Gestor de Entornos${reset}"
+        printf '%*s%s\n' "$left_margin" '' "${c1}CORE-TX${reset} ${dim}•${reset} ${m1}Gestor de Entornos${reset}"
+        printf '%*s%s\n' "$left_margin" '' "${c3}Termux / Android${reset}"
         printf '%*s%s\n' "$left_margin" '' "${c1}OS:${reset} ${current_os}   ${dim}│${reset}   ${c3}USER:${reset} ${USER}"
         printf '\n'
         return
