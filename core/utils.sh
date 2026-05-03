@@ -33,19 +33,10 @@ banner() {
     local dim='\033[2m'
     local reset='\033[0m'
 
-    if [[ $cols -lt 42 ]]; then
-        printf '%bCORE %bTX%b\n' "$c1" "$m1" "$reset"
-        printf '%bTermux Toolkit%b\n' "$c3" "$reset"
-        printf '\n'
-        return
-    fi
-
+    # Minimal version for narrow screens (Termux directo < 56 cols)
+    # ASCII art distorts on Termux's font/narrow screen - use text only
     if [[ $cols -lt 56 ]]; then
-        printf '%b  ______  ____  ___ %b _______  __%b\n' "$c1" "$m1" "$reset"
-        printf '%b / ____/ / __ \\/ _ \\%b/_  __/ |/ /%b\n' "$c2" "$m1" "$reset"
-        printf '%b/ /     / /_/ / // /%b / /  |   / %b\n' "$c3" "$m1" "$reset"
-        printf '%b\\____/  \\____/\\___/%b /_/  /_/|_| %b\n' "$c5" "$m1" "$reset"
-        printf '\n'
+        printf '%bCORE %bTX%b\n' "$c1" "$m1" "$reset"
         printf '%bTermux Toolkit%b\n' "$c3" "$reset"
         printf '\n'
         return
