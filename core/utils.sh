@@ -22,16 +22,51 @@ print_info()    { echo -e "${CYAN}[INFO]${NC} $1"; }
 print_header()  { echo -e "\n${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}\n${BOLD}$1${NC}\n${GRAY}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"; }
 
 banner() {
-    cat << 'EOF'
- ██████╗ ██████╗ ██████╗ ███████╗    ████████╗██╗  ██╗
-██╔════╝██╔═══██╗██╔══██╗██╔════╝    ╚══██╔══╝╚██╗██╔╝
-██║     ██║   ██║██████╔╝█████╗ █████╗██║   ███╔╝█╗
-██║     ██║   ██║██╔══██╗██╔══╝ ╚════╝██║   ██╔═╝███║
-╚██████╗╚██████╔╝██║  ██║███████╗    ██║   ██║   ╚██║
- ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝    ╚═╝   ╚═╝    ╚═╝
+    local cols
+    cols=$(tput cols 2>/dev/null || echo 80)
+    local c1='\033[38;5;51m'
+    local c2='\033[38;5;45m'
+    local c3='\033[38;5;39m'
+    local c4='\033[38;5;33m'
+    local c5='\033[38;5;27m'
+    local m1='\033[38;5;199m'
+    local dim='\033[2m'
+    local reset='\033[0m'
 
-Environment Manager for Termux & WSL2
-EOF
+    if [[ $cols -lt 42 ]]; then
+        local pad=$(( (cols - 12) / 2 ))
+        printf '%*s%bCORE %bTX%b\n' "$pad" '' "$c1" "$m1" "$reset"
+        pad=$(( (cols - 16) / 2 ))
+        printf '%*s%bTermux Toolkit%b\n' "$pad" '' "$c3" "$reset"
+        printf '\n'
+        return
+    fi
+
+    if [[ $cols -lt 56 ]]; then
+        local pad=$(( (cols - 20) / 2 ))
+        printf '%*s%b  ______  ____  ___ %b _______  __%b\n' "$pad" '' "$c1" "$m1" "$reset"
+        printf '%*s%b / ____/ / __ \\/ _ \\%b/_  __/ |/ /%b\n' "$pad" '' "$c2" "$m1" "$reset"
+        printf '%*s%b/ /     / /_/ / // /%b / /  |   / %b\n' "$pad" '' "$c3" "$m1" "$reset"
+        printf '%*s%b\\____/  \\____/\\___/%b /_/  /_/|_| %b\n' "$pad" '' "$c5" "$m1" "$reset"
+        printf '\n'
+        pad=$(( (cols - 28) / 2 ))
+        printf '%*s%bTermux Toolkit%b\n' "$pad" '' "$c3" "$reset"
+        printf '\n'
+        return
+    fi
+
+    local pad=$(( (cols - 48) / 2 ))
+    local sp
+    sp=$(printf '%*s' "$pad" '')
+
+    printf '%b\n' "${sp}${c1}   ______  ____  ____  ______     ${m1} _______  __ ${reset}"
+    printf '%b\n' "${sp}${c2}  / ____/ / __ \\/ __ \\/ ____/    ${m1} /_  __/ |/ / ${reset}"
+    printf '%b\n' "${sp}${c3} / /     / / / / /_/ / __/       ${m1}  / /  |   /  ${reset}"
+    printf '%b\n' "${sp}${c4}/ /___  / /_/ / _, _/ /___       ${m1} / /  /   |   ${reset}"
+    printf '%b\n' "${sp}${c5}\\____/  \\____/_/ |_/_____/       ${m1}/_/  /_/|_|   ${reset}"
+    printf '\n'
+    printf '%b\n' "${sp}${c1}Termux Toolkit${dim} │ Environment Manager${reset}"
+    printf '\n'
 }
 
 install_package() {
