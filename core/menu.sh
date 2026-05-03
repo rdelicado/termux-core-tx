@@ -88,23 +88,26 @@ show_main_menu() {
 
             tput cup 0 0
             tput ed
-            banner
-            echo -e "  ${COLOR_TITLE}Actions${RESET}\n"
+            local frame=""
+            frame+="$(banner)"
+            frame+=$(printf '  %b\n' "${COLOR_TITLE}Actions${RESET}")
             for ((i=window_start; i<=window_end; i++)); do
                 IFS='|' read -r name size <<< "${options[$i]}"
                 if [[ $i -eq $selected ]]; then
-                    printf "\e[K  ${COLOR_ACCENT}┃${COLOR_BG_SEL} ${COLOR_SELECTED}%-26s ${COLOR_SIZE}%7s ${RESET}\n" "$name" "$size"
+                    frame+=$(printf '  %b┃%b %-26s %b%7s %b\n' "${COLOR_ACCENT}" "${COLOR_BG_SEL}${COLOR_SELECTED}" "$name" "${COLOR_SIZE}" "$size" "${RESET}")
                 else
-                    printf "\e[K    ${COLOR_UNSELECTED}%-26s ${COLOR_MUTED}%7s ${RESET}\n" "$name" "$size"
+                    frame+=$(printf '    %b%-26s %b%7s %b\n' "${COLOR_UNSELECTED}" "$name" "${COLOR_MUTED}" "$size" "${RESET}")
                 fi
             done
 
             if [[ ${#options[@]} -gt visible_rows ]]; then
-                echo -e "\e[K  ${COLOR_MUTED}  ▸ mostrando $((window_start + 1))-$((window_end + 1)) de ${#options[@]}${RESET}"
+                frame+=$(printf '  %b▸ mostrando %s-%s de %s%b\n' "${COLOR_MUTED}" "$((window_start + 1))" "$((window_end + 1))" "${#options[@]}" "${RESET}")
             fi
 
-            echo -e "\e[K"
-            echo -e "\e[K  ${COLOR_MUTED}  ↑/↓ navega   ↵ selecciona   q salir${RESET}"
+            frame+=$'\n'
+            frame+=$(printf '  %b↑/↓ navega   ↵ selecciona   q salir%b\n' "${COLOR_MUTED}" "${RESET}")
+
+            printf '%b' "$frame"
 
             read -rsn1 key
 

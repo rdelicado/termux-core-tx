@@ -30,18 +30,40 @@ banner() {
     local m1='\033[38;5;199m'  # Magenta brillante
     local dim='\033[2m'        # Texto tenue
     local reset='\033[0m'
+    local cols rows pad left_margin current_os
+
+    cols=$(tput cols 2>/dev/null || echo 80)
+    rows=$(tput lines 2>/dev/null || echo 24)
+    current_os=$(uname -o 2>/dev/null || uname -s)
+
+    if [[ $cols -lt 72 || $rows -lt 22 ]]; then
+        left_margin=0
+        if [[ $cols -gt 24 ]]; then
+            left_margin=$(((cols - 24) / 2))
+        fi
+
+        printf '%*s%s\n' "$left_margin" '' "${c1}██████╗ ██████╗ ███████╗${m1} ████████╗██╗  ██╗${reset}"
+        printf '%*s%s\n' "$left_margin" '' "${c3}CORE-TX${reset} ${dim}•${reset} ${c1}Gestor de Entornos${reset}"
+        printf '%*s%s\n' "$left_margin" '' "${c1}OS:${reset} ${current_os}   ${dim}│${reset}   ${c3}USER:${reset} ${USER}"
+        printf '\n'
+        return
+    fi
+
+    pad=$(((cols - 46) / 2))
+    if [[ $pad -lt 0 ]]; then
+        pad=0
+    fi
 
     # Logo CORE TX perfectamente alineado y simétrico
-    echo -e "${c1}   ______  ____  ____  ______     ${m1} _______  __ ${reset}"
-    echo -e "${c2}  / ____/ / __ \\/ __ \\/ ____/    ${m1} /_  __/ |/ / ${reset}"
-    echo -e "${c3} / /     / / / / /_/ / __/       ${m1}  / /  |   /  ${reset}"
-    echo -e "${c4}/ /___  / /_/ / _, _/ /___       ${m1} / /  /   |   ${reset}"
-    echo -e "${c5}\\____/  \\____/_/ |_/_____/       ${m1}/_/  /_/|_|   ${reset}"
+    printf '%*s%s\n' "$pad" '' "${c1}   ______  ____  ____  ______     ${m1} _______  __ ${reset}"
+    printf '%*s%s\n' "$pad" '' "${c2}  / ____/ / __ \\/ __ \\/ ____/    ${m1} /_  __/ |/ / ${reset}"
+    printf '%*s%s\n' "$pad" '' "${c3} / /     / / / / /_/ / __/       ${m1}  / /  |   /  ${reset}"
+    printf '%*s%s\n' "$pad" '' "${c4}/ /___  / /_/ / _, _/ /___       ${m1} / /  /   |   ${reset}"
+    printf '%*s%s\n' "$pad" '' "${c5}\\____/  \\____/_/ |_/_____/       ${m1}/_/  /_/|_|   ${reset}"
     echo ""
     
     # Info Bar simplificada (Sin líneas divisorias)
-    local current_os=$(uname -o 2>/dev/null || uname -s)
-    echo -e "       ${c1}OS:${reset} ${current_os}   ${dim}│${reset}   ${c3}USER:${reset} $USER"
+    printf '%*s%s\n' "$pad" '' "${c1}OS:${reset} ${current_os}   ${dim}│${reset}   ${c3}USER:${reset} $USER"
     echo ""
 }
 
